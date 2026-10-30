@@ -91,3 +91,24 @@ exists for it.
   this book itself records that they died in Opole in 1942.
 
 Compiled by Moshe Berman.
+
+## Site features (added 2026-10-30)
+
+- Trilingual interface: English, Deutsch, Polski (sidebar switcher).
+- Register/Statistics views in a floating pinned sidebar (bottom bar on
+  mobile). Statistics include multi-facet charts: age groups over time,
+  cause of death over time, and age groups by cause of death, plus a
+  glossary of the recorded causes. Causes are displayed in the active
+  language; the recorded Polish wording is kept in the data and shown on
+  each entry.
+- Filters: search, birthplace (standardized), age group, gender, cause of
+  death (grouped), fate recorded, yahrtzeit month, sort, page size.
+- The register table carries a subtle fate dot per database (filled =
+  found, half = probable, pale = ambiguous, ring = not found), and each
+  row opens a detail page (›).
+- Witness names are standardized in the build (`canon_witness` in
+  work/build_db.py): the three regular witnesses' many spellings and both
+  name orders are grouped under Mechel Frydman, Moszek Fajersztajn, and
+  Oskar Hirschensohn, corroborated by their stable occupations in the
+  acts. All other names are kept as recorded. Witness occupations are no
+  longer displayed.

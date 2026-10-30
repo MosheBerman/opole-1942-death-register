@@ -19,6 +19,8 @@
     color:var(--ink); font-family:Georgia,'Times New Roman',serif; line-height:1.45;
   }
   .wrap{max-width:1060px; margin:0 auto; padding:20px 16px 48px}
+  @media (min-width:1120px){ .wrap{margin-left:196px} }
+  @media (min-width:761px) and (max-width:1119px){ .wrap{padding-left:180px} }
   header{text-align:center; padding:26px 10px 18px; border-bottom:4px double var(--rule-dark); margin-bottom:8px}
   .archive-line{letter-spacing:.18em; text-transform:uppercase; font-size:.72rem; color:var(--ink-soft)}
   h1{font-size:2rem; margin:.35em 0 .1em; font-weight:600; letter-spacing:.01em}
@@ -28,66 +30,78 @@
     background:rgba(124,34,34,.04)}
   .intro{max-width:760px; margin:14px auto 4px; font-size:.95rem; color:var(--ink-soft); text-align:center}
   .intro a{color:var(--accent)}
-  .controls{
-    display:flex; flex-wrap:wrap; gap:10px; justify-content:center; align-items:end;
-    padding:16px 6px 6px;
+  /* floating pinned sidebar: view tabs + language */
+  .sidebar{position:fixed; left:14px; top:110px; z-index:60; display:flex; flex-direction:column; gap:.45em;
+    background:var(--card); border:1px solid var(--rule); box-shadow:var(--shadow); border-radius:3px; padding:.6em}
+  .sidebar button{font:inherit; font-size:.9rem; text-align:left; padding:.4em .8em; border:1px solid var(--rule);
+    background:transparent; color:var(--ink-soft); cursor:pointer; border-radius:2px}
+  .sidebar button.current{background:var(--accent); border-color:var(--accent); color:#fff}
+  .sidebar select{font:inherit; font-size:.9rem; padding:.38em .4em; border:1px solid var(--rule-dark);
+    background:var(--card); color:var(--ink); border-radius:2px}
+  @media (max-width:760px){
+    .sidebar{left:0; right:0; top:auto; bottom:0; flex-direction:row; align-items:center; justify-content:space-between;
+      border-left:none; border-right:none; border-bottom:none; padding:.45em .6em}
+    .sidebar button{text-align:center}
+    body{padding-bottom:70px}
   }
+  /* controls: one shared style for the search box and every dropdown */
+  .controls{display:flex; flex-wrap:wrap; gap:.7em 1em; align-items:end; margin:12px 0 4px}
   .controls label{display:flex; flex-direction:column; gap:4px; font-size:.72rem;
-    letter-spacing:.12em; text-transform:uppercase; color:var(--ink-soft)}
-  input[type=search], select{
-    font:inherit; font-size:.95rem; color:var(--ink); background:var(--card);
-    border:1px solid var(--rule); border-radius:3px; padding:.45em .6em; min-height:42px;
+    letter-spacing:.08em; text-transform:uppercase; color:var(--ink-soft)}
+  .controls input, .controls select{
+    font:inherit; font-size:.95rem; letter-spacing:normal; text-transform:none;
+    height:2.35em; padding:0 .55em; color:var(--ink);
+    background:var(--card); border:1px solid var(--rule-dark); border-radius:2px;
+    box-shadow:inset 0 1px 2px rgba(46,33,24,.06);
   }
-  input[type=search]{min-width:min(320px,78vw)}
-  .count-line{text-align:center; color:var(--ink-soft); font-style:italic; font-size:.9rem; padding:8px 0 2px}
-  .ledger{
-    background:var(--card); border:1px solid var(--rule); box-shadow:var(--shadow);
-    margin-top:10px; overflow-x:auto;
-  }
-  table{border-collapse:collapse; width:100%; font-size:.93rem}
-  thead th{
-    text-align:left; font-size:.7rem; letter-spacing:.12em; text-transform:uppercase;
-    color:var(--ink-soft); border-bottom:2px solid var(--rule-dark); padding:.6em .7em; white-space:nowrap;
-    background:linear-gradient(#f3ead2, #eee1c2);
-  }
-  tbody td{padding:.52em .7em; border-bottom:1px solid #e2d5b4; vertical-align:top}
+  .controls input:focus, .controls select:focus{outline:2px solid var(--accent-soft); outline-offset:0; border-color:var(--accent)}
+  .controls input[type="search"]{min-width:230px}
+  .count-line{margin:10px 0 4px; font-style:italic; color:var(--ink-soft)}
+  .fate-legend{font-size:.8rem; color:var(--ink-soft); margin:2px 0 8px; font-style:normal}
+  .ledger{border:1.5px solid var(--rule-dark); border-radius:2px; background:var(--card); box-shadow:var(--shadow); overflow-x:auto}
+  table{width:100%; border-collapse:collapse; font-size:.93rem}
+  thead th{background:var(--paper2); text-align:left; padding:.5em .6em; border-bottom:1.5px solid var(--rule-dark);
+    font-size:.74rem; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-soft); white-space:nowrap}
+  tbody td{padding:.48em .6em; border-bottom:1px solid #e3d3ac; vertical-align:top}
   tbody tr{cursor:pointer}
   tbody tr:hover{background:#f3ead2}
-  td.nr{font-variant-numeric:tabular-nums; color:var(--ink-soft); white-space:nowrap}
+  tbody tr:hover td.name{text-decoration:underline}
+  td.nr{font-weight:700; white-space:nowrap}
   td.name{font-weight:600}
-  td .sub{display:block; font-weight:400; font-size:.8rem; color:var(--ink-soft)}
-  td.date{white-space:nowrap; font-variant-numeric:tabular-nums}
-  .pager{display:flex; gap:6px; justify-content:center; align-items:center; flex-wrap:wrap; padding:16px 4px 4px}
-  .pager button{
-    font:inherit; font-size:.9rem; background:var(--card); color:var(--ink);
-    border:1px solid var(--rule); border-radius:3px; padding:.4em .8em; min-height:40px; cursor:pointer;
-  }
-  .pager button[disabled]{opacity:.4; cursor:default}
-  .pager button.current{background:var(--accent); border-color:var(--accent); color:#fdf6e3}
-  .pager .info{font-style:italic; color:var(--ink-soft); font-size:.88rem; margin:0 6px}
-  /* detail */
+  td.name .sub{display:block; font-weight:400; font-size:.82rem; color:var(--ink-soft)}
+  td.date{white-space:nowrap}
+  td.chev{color:var(--accent); font-size:1.25rem; font-weight:700; text-align:center; width:1.6em}
+  td.fate{text-align:center; width:3.2em}
+  .dot{display:inline-block; width:.78em; height:.78em; border-radius:50%; vertical-align:middle}
+  .dot-found{background:var(--accent)}
+  .dot-probable{background:linear-gradient(90deg, var(--accent) 50%, #d8c49a 50%); border:1px solid var(--accent)}
+  .dot-ambiguous{background:#d8c49a}
+  .dot-notfound{background:transparent; border:1.5px solid #b39b6d}
+  .pager{display:flex; flex-wrap:wrap; gap:.35em; align-items:center; margin:12px 0}
+  .pager button{font:inherit; padding:.3em .7em; border:1px solid var(--rule); background:var(--card); color:var(--ink); cursor:pointer; border-radius:2px}
+  .pager button.current{background:var(--accent); border-color:var(--accent); color:#fff}
+  .pager button:disabled{opacity:.4; cursor:default}
+  .pager .info{color:var(--ink-soft); font-size:.9rem; padding:0 .3em}
   #detail{display:none}
   #detail.open{display:block}
-  .record-card{
-    background:var(--card); border:1px solid var(--rule); box-shadow:var(--shadow);
-    padding:22px 22px 10px; margin-top:14px; position:relative;
-  }
-  .record-card::before{content:""; position:absolute; top:6px; bottom:6px; left:6px; right:6px;
-    border:1px solid #e0d0a8; pointer-events:none}
-  .record-card h2{margin:.1em 0 .2em; font-size:1.5rem}
-  .record-card h2 .nr{color:var(--accent); font-size:1rem; letter-spacing:.08em; display:block; text-transform:uppercase}
-  .backbtn{font:inherit; background:none; border:none; color:var(--accent); cursor:pointer; padding:6px 0; font-size:.95rem}
-  dl.fields{display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:4px 26px; margin:12px 0}
-  dl.fields div{border-bottom:1px dotted var(--rule); padding:5px 0}
-  dt{font-size:.68rem; letter-spacing:.13em; text-transform:uppercase; color:var(--ink-soft)}
-  dd{margin:.15em 0 0; font-size:1rem}
-  dd .aswritten{display:block; font-size:.82rem; font-style:italic; color:var(--ink-soft)}
-  .fates{width:100%; border-collapse:collapse; margin:8px 0 14px; font-size:.92rem}
-  .fates th,.fates td{border:1px solid #e0d0a8; padding:.45em .6em; text-align:left; vertical-align:top}
-  .fates th{background:#f3ead2; font-size:.7rem; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-soft)}
-  .viewtabs{display:flex; gap:.5em; margin:0 0 1em}
-  .viewtabs button{font:inherit; padding:.35em 1em; border:1px solid var(--rule); background:transparent; color:var(--ink-soft); cursor:pointer; border-radius:2px}
-  .viewtabs button.current{background:var(--accent); border-color:var(--accent); color:#fff}
+  .card{background:var(--card); border:1.5px solid var(--rule-dark); border-radius:2px; box-shadow:var(--shadow); padding:18px 20px}
+  .backbtn{font:inherit; padding:.35em .9em; border:1px solid var(--rule); background:transparent; color:var(--accent); cursor:pointer; border-radius:2px; margin-bottom:12px}
+  .card h2{margin:.1em 0 .5em; font-size:1.5rem}
+  dl.fields{display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:.4em 1.6em; margin:0 0 6px}
+  dl.fields div{border-bottom:1px solid #e3d3ac; padding:.25em 0}
+  dt{font-size:.7rem; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-soft)}
+  dd{margin:.1em 0 0; font-size:1rem}
+  dd .asw{display:block; font-size:.83rem; color:var(--ink-soft); font-style:italic}
+  table.fates{width:100%; border-collapse:collapse; margin:.4em 0}
+  table.fates th{text-align:left; width:11em; background:none; border-bottom:1px solid #e3d3ac; text-transform:none; letter-spacing:0; font-size:.93rem; color:var(--ink)}
+  table.fates td{border-bottom:1px solid #e3d3ac; padding:.45em .6em}
+  table.fates a{color:var(--accent)}
+  .status-notfound{color:var(--ink-soft); font-style:italic}
+  .status-probable{color:var(--ink)}
+  .status-ambiguous{color:var(--accent-soft)}
+  details{margin-top:10px}
+  summary{cursor:pointer; color:var(--accent)}
+  .transcription{white-space:pre-wrap; background:var(--paper); border:1px solid var(--rule); padding:12px 14px; margin-top:8px; font-size:.92rem}
   .stats-grid{display:grid; grid-template-columns:1fr 1fr; gap:1.2em 2em}
   @media (max-width:760px){ .stats-grid{grid-template-columns:1fr} }
   .stat-box h3{margin:.2em 0 .5em; font-size:1rem; letter-spacing:.04em}
@@ -95,90 +109,93 @@
   .stat-box .cap{font-size:.85rem; color:var(--ink-soft); margin-top:.3em}
   .stat-table{width:100%; border-collapse:collapse; font-size:.92rem}
   .stat-table td,.stat-table th{border-bottom:1px solid #e0d0a8; padding:.3em .4em; text-align:left}
-  .status-notfound{color:var(--ink-soft); font-style:italic}
-  .status-found{color:var(--ink)}
-  .status-probable{color:var(--ink)}
-  .status-ambiguous{color:var(--accent-soft)}
-  details{margin:10px 0 16px}
-  summary{cursor:pointer; color:var(--accent); font-size:.92rem}
-  .transcription{font-style:italic; color:var(--ink-soft); font-size:.92rem; padding:10px 14px;
-    border-left:3px solid var(--rule); background:#faf3e0; margin-top:8px; white-space:pre-wrap}
-  footer{border-top:4px double var(--rule-dark); margin-top:30px; padding-top:14px;
-    font-size:.85rem; color:var(--ink-soft); text-align:center}
+  .legend{display:flex; flex-wrap:wrap; gap:.4em 1em; font-size:.83rem; color:var(--ink-soft); margin:.3em 0 .2em}
+  .legend .sw{display:inline-block; width:.85em; height:.85em; margin-right:.35em; vertical-align:-.08em; border-radius:1px}
+  .glossary{columns:2; column-gap:2em; font-size:.9rem}
+  @media (max-width:760px){ .glossary{columns:1} }
+  .glossary div{break-inside:avoid; margin-bottom:.55em}
+  .glossary b{color:var(--ink)}
+  footer{margin-top:34px; border-top:4px double var(--rule-dark); padding-top:14px; font-size:.88rem; color:var(--ink-soft)}
   footer a{color:var(--accent)}
-  .downloads a{margin:0 .5em}
+  .downloads a{margin:0 .35em}
+  @media (max-width:900px){
+    thead th:nth-child(7), tbody td:nth-child(7){display:none} /* witnesses fold into detail */
+  }
   @media (max-width:640px){
+    thead th:nth-child(6), tbody td:nth-child(6){display:none} /* time folds into detail */
+    thead th:nth-child(8), tbody td:nth-child(8){display:none} /* yahrtzeit folds into detail */
     h1{font-size:1.55rem}
-    thead th:nth-child(7), tbody td:nth-child(7){display:none} /* witnesses fold into detail on small screens */
-    thead th:nth-child(6), tbody td:nth-child(6){display:none} /* time folds too */
-    table{font-size:.88rem}
   }
 </style>
 </head>
 <body>
+<nav class="sidebar" id="sidebar">
+  <button id="tabList" class="current" data-i18n="tab_register">Register</button>
+  <button id="tabStats" data-i18n="tab_stats">Statistics</button>
+  <select id="langSel" aria-label="Language">
+    <option value="en">English</option>
+    <option value="de">Deutsch</option>
+    <option value="pl">Polski</option>
+  </select>
+</nav>
 <div class="wrap">
   <header>
-    <div class="archive-line">Archiwum Państwowe w Lublinie &middot; State Archive in Lublin</div>
-    <h1>Opole Death Register, 1942
-      <span class="pl">Księga zgonów &mdash; Akta stanu cywilnego Okręgu Bożniczego w Opolu</span>
-    </h1>
-    <div class="sig">Signature 35 / 1763 / 0 / 1.3 / 28</div>
-    <p class="intro">
-      A searchable transcription of the 1942 death register of the Jewish community of Opole
-      (Opole Lubelskie), Poland. Most of those recorded here were Jews deported from Vienna in
-      1941. Each entry gives the name, age, recorded birthplace, date and time of death, and
-      witnesses exactly as the register records them, with the Hebrew date of death and the
-      yahrtzeit, and what DÖW, Yad Vashem, and the US Holocaust Memorial Museum record as
-      the person's fate.
-      Original scans: <a href="https://www.szukajwarchiwach.gov.pl/jednostka/-/jednostka/39731697" target="_blank" rel="noopener">Szukaj w Archiwach, unit 39731697</a>.
-    </p>
+    <div class="archive-line">Archiwum Państwowe w Lublinie &middot; Fond 1763</div>
+    <h1><span data-i18n="title">Opole 1942 Death Register</span><span class="pl">Księga zgonów, Opole Lubelskie 1942</span></h1>
+    <div class="sig">35/1763/0/1.3/28</div>
+    <p class="intro" data-i18n="intro1">A searchable transcription of the Jewish death register kept at Opole Lubelskie in 1942. Most of the dead were Jews deported from Vienna in February and March 1941, and Jews brought from Slovakia in 1942. Each entry gives the name, age, recorded birthplace, date and time of death, witnesses, and the yahrtzeit (Hebrew date of death), and what DÖW, Yad Vashem, and the US Holocaust Memorial Museum record as the person's fate.</p>
+    <p class="intro" data-i18n="intro2">Select an entry (›) for its full record, fate cross-references, and a transcription of the act.</p>
   </header>
 
-  <div class="controls">
-    <label>Search
-      <input type="search" id="q" placeholder="Name, birthplace, witness&hellip;" autocomplete="off">
+  <div class="controls" id="controls">
+    <label><span data-i18n="f_search">Search</span>
+      <input type="search" id="q" data-i18n-ph="f_search_ph" placeholder="Name, birthplace, witness…" autocomplete="off">
     </label>
-    <label>Birthplace
+    <label><span data-i18n="f_birth">Birthplace</span>
       <select id="fBirth"><option value="">All birthplaces</option></select>
     </label>
-    <label>Yahrtzeit (Hebrew month)
-      <select id="fHeb">
-        <option value="">All months</option>
-        <option>Nisan</option><option>Iyar</option><option>Sivan</option><option>Tammuz</option>
-        <option>Av</option><option>Elul</option><option>Tishrei</option><option>Cheshvan</option>
-        <option>Kislev</option><option>Tevet</option><option>Shevat</option><option>Adar</option><option>Adar II</option>
-      </select>
+    <label><span data-i18n="f_age">Age group</span>
+      <select id="fAge"></select>
     </label>
-    <label>Sort
-      <select id="fSort">
-        <option value="act">Act number</option>
-        <option value="date">Date of death</option>
-        <option value="name">Name (A&ndash;Z)</option>
-      </select>
+    <label><span data-i18n="f_gender">Gender</span>
+      <select id="fGender"></select>
     </label>
-    <label>Per page
+    <label><span data-i18n="f_cause">Cause of death</span>
+      <select id="fCause"></select>
+    </label>
+    <label><span data-i18n="f_fate">Fate recorded</span>
+      <select id="fFate"></select>
+    </label>
+    <label><span data-i18n="f_heb">Yahrtzeit (Hebrew month)</span>
+      <select id="fHeb"></select>
+    </label>
+    <label><span data-i18n="f_sort">Sort</span>
+      <select id="fSort"></select>
+    </label>
+    <label><span data-i18n="f_page">Per page</span>
       <select id="fPage">
         <option value="25">25</option>
         <option value="50">50</option>
         <option value="100">100</option>
-        <option value="all">All</option>
+        <option value="all" data-i18n="all">All</option>
       </select>
     </label>
   </div>
-  <div class="viewtabs" id="viewTabs">
-    <button id="tabList" class="current">Register</button>
-    <button id="tabStats">Statistics</button>
-  </div>
-  <div class="count-line" id="countLine">Loading the register&hellip;</div>
+  <div class="count-line" id="countLine">Loading the register…</div>
+  <div class="fate-legend" id="fateLegend"></div>
 
   <div id="statsView" style="display:none">
     <div class="stats-grid">
-      <div class="stat-box"><h3>Deaths by month, 1942</h3><div id="chartMonths"></div></div>
-      <div class="stat-box"><h3>Deaths by age</h3><div id="chartAges"></div><div class="cap" id="ageNote"></div></div>
-      <div class="stat-box"><h3>Men and women</h3><div id="chartGender"></div><div class="cap">Gender as stated grammatically in each act (umarł / umarła).</div></div>
-      <div class="stat-box"><h3>Recorded cause of death (Polish, as written)</h3><div id="chartCauses"></div><div class="cap" id="causeNote"></div></div>
-      <div class="stat-box"><h3>Witness pairs</h3><div id="witnessStats"></div><div class="cap">The two witnesses (declarants) served in stretches; a new pair marks a changeover. Pairs below are ordered by first appearance.</div></div>
-      <div class="stat-box"><h3>Most common birthplaces (standardized)</h3><div id="placeStats"></div><div class="cap">Spelling and language variants of one place are grouped; the register's own spelling is kept on each entry.</div></div>
+      <div class="stat-box"><h3 data-i18n="s_months">Deaths by month, 1942</h3><div id="chartMonths"></div></div>
+      <div class="stat-box"><h3 data-i18n="s_ages">Deaths by age</h3><div id="chartAges"></div><div class="cap" id="ageNote"></div></div>
+      <div class="stat-box"><h3 data-i18n="s_gender">Men and women</h3><div id="chartGender"></div><div class="cap" data-i18n="s_gender_cap">Gender as stated grammatically in each act (umarł / umarła).</div></div>
+      <div class="stat-box"><h3 data-i18n="s_causes">Recorded cause of death</h3><div id="chartCauses"></div><div class="cap" id="causeNote"></div></div>
+      <div class="stat-box"><h3 data-i18n="s_age_time">Age groups over time</h3><div id="chartAgeTime"></div><div class="legend" id="legendAge"></div></div>
+      <div class="stat-box"><h3 data-i18n="s_cause_time">Cause of death over time</h3><div id="chartCauseTime"></div><div class="legend" id="legendCause"></div></div>
+      <div class="stat-box"><h3 data-i18n="s_age_cause">Age groups by cause of death</h3><div id="chartAgeCause"></div><div class="legend" id="legendAge2"></div></div>
+      <div class="stat-box"><h3 data-i18n="s_witness">Witness pairs</h3><div id="witnessStats"></div><div class="cap" data-i18n="s_witness_cap">The two witnesses (declarants) served in stretches; a new pair marks a changeover. Pairs are ordered by first appearance; witness names are standardized, spelling variants grouped.</div></div>
+      <div class="stat-box"><h3 data-i18n="s_places">Most common birthplaces (standardized)</h3><div id="placeStats"></div><div class="cap" data-i18n="s_places_cap">Spelling and language variants of one place are grouped; the register's own spelling is kept on each entry.</div></div>
+      <div class="stat-box" style="grid-column:1/-1"><h3 data-i18n="s_glossary">Glossary of recorded causes of death</h3><div class="glossary" id="glossary"></div></div>
     </div>
   </div>
 
@@ -186,8 +203,10 @@
     <div class="ledger">
       <table aria-label="Death register entries">
         <thead><tr>
-          <th>Nr</th><th>Name</th><th>Age</th><th>Birthplace (recorded)</th>
-          <th>Died</th><th>Time</th><th>Witnesses</th><th>Yahrtzeit</th>
+          <th data-i18n="c_nr">Nr</th><th data-i18n="c_name">Name</th><th data-i18n="c_age">Age</th>
+          <th data-i18n="c_birth">Birthplace (recorded)</th><th data-i18n="c_died">Died</th><th data-i18n="c_time">Time</th>
+          <th data-i18n="c_wit">Witnesses</th><th data-i18n="c_yah">Yahrtzeit</th>
+          <th title="DÖW">DÖW</th><th title="Yad Vashem">YV</th><th title="USHMM">USHMM</th><th></th>
         </tr></thead>
         <tbody id="rows"></tbody>
       </table>
@@ -198,52 +217,257 @@
   <div id="detail"></div>
 
   <footer>
-    <p class="downloads">Download the data:
+    <p class="downloads"><span data-i18n="dl">Download the data:</span>
       <a href="data/deaths.csv" download>CSV</a>&middot;<a href="data/deaths.json" download>JSON</a>&middot;<a href="data/deaths.sqlite" download>SQLite</a>
     </p>
-    <p>Transcribed from the register scans published by the Archiwum Państwowe w Lublinie via
-    Szukaj w Archiwach. Birthplaces, ages, and causes are as recorded in 1942 and may differ
-    from other sources; the register itself is the authority for what it says. Fate entries
-    quote each database's own wording and link to its record. A <em>probable match</em> is a
-    record whose name matches but whose stated birth year falls within two years of the age
-    implied by the register; it is marked, never merged silently. Birthplaces are shown as
-    recorded; the filter groups spelling and language variants of the same place under a
-    standardized name.</p>
-    <p>Compiled by Moshe Berman &middot; <a href="https://github.com/MosheBerman/opole-1942-death-register" target="_blank" rel="noopener">Source and method on GitHub</a></p>
+    <p data-i18n="foot1">Transcribed from the register scans published by the Archiwum Państwowe w Lublinie via Szukaj w Archiwach. Birthplaces, ages, and causes are as recorded in 1942 and may differ from other sources; the register itself is the authority for what it says. Fate entries quote each database's own wording and link to its record. A probable match is a record whose name matches but whose stated birth year falls within two years of the age implied by the register; it is marked, never merged silently. Birthplaces are shown as recorded; the filter groups spelling and language variants of the same place under a standardized name. Witness names are standardized the same way.</p>
+    <p><span data-i18n="foot2">Compiled by Moshe Berman</span> &middot; <a href="https://github.com/MosheBerman/opole-1942-death-register" target="_blank" rel="noopener">GitHub</a></p>
   </footer>
 </div>
 
 <script>
-let DATA = [], filtered = [], page = 1;
-const pageSize = () => {
-  const v = $("#fPage").value;
-  return v === "all" ? Math.max(1, filtered.length) : Number(v);
+"use strict";
+let LANG = localStorage.getItem("opole-lang") || "en";
+const I18N = {
+en: { tab_register:"Register", tab_stats:"Statistics", title:"Opole 1942 Death Register",
+  intro1:"A searchable transcription of the Jewish death register kept at Opole Lubelskie in 1942. Most of the dead were Jews deported from Vienna in February and March 1941, and Jews brought from Slovakia in 1942. Each entry gives the name, age, recorded birthplace, date and time of death, witnesses, and the yahrtzeit (Hebrew date of death), and what DÖW, Yad Vashem, and the US Holocaust Memorial Museum record as the person's fate.",
+  intro2:"Select an entry (›) for its full record, fate cross-references, and a transcription of the act.",
+  f_search:"Search", f_search_ph:"Name, birthplace, witness…", f_birth:"Birthplace", f_age:"Age group", f_gender:"Gender",
+  f_cause:"Cause of death", f_fate:"Fate recorded", f_heb:"Yahrtzeit (Hebrew month)", f_sort:"Sort", f_page:"Per page", all:"All",
+  all_birth:"All birthplaces", all_age:"All ages", all_gender:"All", all_cause:"All causes", all_fate:"Any", all_months:"All months",
+  men:"Men", women:"Women", fate_any_found:"Found in a database", fate_probable:"Probable match",
+  fate_none_found:"No record found", fate_some_missing:"Found in some, missing in others",
+  sort_act:"Act number", sort_date:"Date of death", sort_name:"Name (A–Z)",
+  c_nr:"Nr", c_name:"Name", c_age:"Age", c_birth:"Birthplace (recorded)", c_died:"Died", c_time:"Time", c_wit:"Witnesses", c_yah:"Yahrtzeit",
+  entries:"entries in the register", of_entries:"of", match:"entries match", index_lbl:"index",
+  prev:"← Previous", next:"Next →", page:"Page",
+  back:"← Back to the register", d_act:"Act",
+  d_age:"Age", d_birth:"Birthplace (recorded)", d_std:"Place (standardized)", d_died:"Date of death", d_time:"Time of death",
+  d_yah:"Yahrtzeit", d_wit:"Witnesses", d_occ:"Occupation (recorded)", d_mar:"Marital status", d_cause:"Cause of death",
+  d_reg:"Registered", d_notes:"Notes", d_scan:"Register scan", d_of:"of",
+  evening:"Died in the evening; by the Hebrew calendar the day may already have turned at sunset.",
+  not_recorded:"Not recorded", fate_head:"Fate, as recorded", this_register:"This register",
+  died_in:"Died in Opole on", at:"at", cause_lbl:"recorded cause", view_record:"View record",
+  probable_lbl:"Probable match", ambiguous_lbl:"Ambiguous: name found, no candidate matches the register age and name together",
+  notfound_lbl:"Not found", notchecked_lbl:"Not yet checked", found_lbl:"Found",
+  open_orig:"Open the original register at Szukaj w Archiwach", scan_lbl:"scan",
+  transcription:"Full transcription of the act (Polish)",
+  legend_found:"record found", legend_probable:"probable match", legend_ambiguous:"ambiguous", legend_notfound:"not found",
+  s_months:"Deaths by month, 1942", s_ages:"Deaths by age", s_gender:"Men and women",
+  s_gender_cap:"Gender as stated grammatically in each act (umarł / umarła).",
+  s_causes:"Recorded cause of death", s_age_time:"Age groups over time", s_cause_time:"Cause of death over time",
+  s_age_cause:"Age groups by cause of death", s_witness:"Witness pairs",
+  s_witness_cap:"The two witnesses (declarants) served in stretches; a new pair marks a changeover. Pairs are ordered by first appearance; witness names are standardized, spelling variants grouped.",
+  s_places:"Most common birthplaces (standardized)",
+  s_places_cap:"Spelling and language variants of one place are grouped; the register's own spelling is kept on each entry.",
+  s_glossary:"Glossary of recorded causes of death",
+  age_note_pre:"Age not recorded for", age_note_suf:"entries.",
+  cause_note_pre:"Grouped by the recorded wording, near-identical forms merged", cause_note_mid:"distinct forms", cause_note_suf:"Cause not recorded for",
+  other:"Other", witness_pair:"Witness pair", acts:"Acts", span:"Span", further_pairs:"further pairs",
+  dl:"Download the data:",
+  foot1:"Transcribed from the register scans published by the Archiwum Państwowe w Lublinie via Szukaj w Archiwach. Birthplaces, ages, and causes are as recorded in 1942 and may differ from other sources; the register itself is the authority for what it says. Fate entries quote each database's own wording and link to its record. A probable match is a record whose name matches but whose stated birth year falls within two years of the age implied by the register; it is marked, never merged silently. Birthplaces are shown as recorded; the filter groups spelling and language variants of the same place under a standardized name. Witness names are standardized the same way.",
+  foot2:"Compiled by Moshe Berman" },
+de: { tab_register:"Register", tab_stats:"Statistik", title:"Sterberegister Opole 1942",
+  intro1:"Eine durchsuchbare Transkription des jüdischen Sterberegisters von Opole Lubelskie aus dem Jahr 1942. Die meisten Verstorbenen waren im Februar und März 1941 aus Wien deportierte Juden sowie 1942 aus der Slowakei gebrachte Juden. Jeder Eintrag nennt Name, Alter, verzeichneten Geburtsort, Sterbedatum und -uhrzeit, Zeugen und das Jahrzeit (hebräisches Sterbedatum) sowie das, was DÖW, Yad Vashem und das US Holocaust Memorial Museum als Schicksal der Person verzeichnen.",
+  intro2:"Wählen Sie einen Eintrag (›) für den vollständigen Datensatz, die Schicksalsabgleiche und eine Transkription des Akts.",
+  f_search:"Suche", f_search_ph:"Name, Geburtsort, Zeuge…", f_birth:"Geburtsort", f_age:"Altersgruppe", f_gender:"Geschlecht",
+  f_cause:"Todesursache", f_fate:"Schicksal verzeichnet", f_heb:"Jahrzeit (hebr. Monat)", f_sort:"Sortierung", f_page:"Pro Seite", all:"Alle",
+  all_birth:"Alle Geburtsorte", all_age:"Alle Altersgruppen", all_gender:"Alle", all_cause:"Alle Ursachen", all_fate:"Beliebig", all_months:"Alle Monate",
+  men:"Männer", women:"Frauen", fate_any_found:"In einer Datenbank gefunden", fate_probable:"Wahrscheinliche Übereinstimmung",
+  fate_none_found:"Kein Datensatz gefunden", fate_some_missing:"In manchen gefunden, in anderen nicht",
+  sort_act:"Aktennummer", sort_date:"Sterbedatum", sort_name:"Name (A–Z)",
+  c_nr:"Nr.", c_name:"Name", c_age:"Alter", c_birth:"Geburtsort (verzeichnet)", c_died:"Gestorben", c_time:"Uhrzeit", c_wit:"Zeugen", c_yah:"Jahrzeit",
+  entries:"Einträge im Register", of_entries:"von", match:"Einträge entsprechen", index_lbl:"Index",
+  prev:"← Zurück", next:"Weiter →", page:"Seite",
+  back:"← Zurück zum Register", d_act:"Akt",
+  d_age:"Alter", d_birth:"Geburtsort (verzeichnet)", d_std:"Ort (standardisiert)", d_died:"Sterbedatum", d_time:"Sterbeuhrzeit",
+  d_yah:"Jahrzeit", d_wit:"Zeugen", d_occ:"Beruf (verzeichnet)", d_mar:"Familienstand", d_cause:"Todesursache",
+  d_reg:"Registriert", d_notes:"Anmerkungen", d_scan:"Scan im Register", d_of:"von",
+  evening:"Abends gestorben; nach dem hebräischen Kalender kann der Tag bei Sonnenuntergang bereits gewechselt haben.",
+  not_recorded:"Nicht verzeichnet", fate_head:"Schicksal, wie verzeichnet", this_register:"Dieses Register",
+  died_in:"Gestorben in Opole am", at:"um", cause_lbl:"verzeichnete Ursache", view_record:"Datensatz ansehen",
+  probable_lbl:"Wahrscheinliche Übereinstimmung", ambiguous_lbl:"Mehrdeutig: Name gefunden, kein Kandidat passt zugleich zu Alter und Name des Registers",
+  notfound_lbl:"Nicht gefunden", notchecked_lbl:"Noch nicht geprüft", found_lbl:"Gefunden",
+  open_orig:"Originalregister bei Szukaj w Archiwach öffnen", scan_lbl:"Scan",
+  transcription:"Vollständige Transkription des Akts (Polnisch)",
+  legend_found:"Datensatz gefunden", legend_probable:"wahrscheinliche Übereinstimmung", legend_ambiguous:"mehrdeutig", legend_notfound:"nicht gefunden",
+  s_months:"Sterbefälle nach Monat, 1942", s_ages:"Sterbefälle nach Alter", s_gender:"Männer und Frauen",
+  s_gender_cap:"Geschlecht, wie es in jedem Akt grammatisch angegeben ist (umarł / umarła).",
+  s_causes:"Verzeichnete Todesursache", s_age_time:"Altersgruppen im Zeitverlauf", s_cause_time:"Todesursache im Zeitverlauf",
+  s_age_cause:"Altersgruppen nach Todesursache", s_witness:"Zeugenpaare",
+  s_witness_cap:"Die zwei Zeugen (Anzeigenden) amtierten in Abschnitten; ein neues Paar markiert einen Wechsel. Die Paare sind nach erstem Auftreten geordnet; Zeugennamen sind standardisiert, Schreibvarianten zusammengefasst.",
+  s_places:"Häufigste Geburtsorte (standardisiert)",
+  s_places_cap:"Schreib- und Sprachvarianten eines Orts sind zusammengefasst; die Schreibweise des Registers bleibt bei jedem Eintrag erhalten.",
+  s_glossary:"Glossar der verzeichneten Todesursachen",
+  age_note_pre:"Alter nicht verzeichnet bei", age_note_suf:"Einträgen.",
+  cause_note_pre:"Gruppiert nach der verzeichneten Formulierung, nahezu identische Formen zusammengefasst", cause_note_mid:"verschiedene Formen", cause_note_suf:"Ursache nicht verzeichnet bei",
+  other:"Andere", witness_pair:"Zeugenpaar", acts:"Akte", span:"Zeitraum", further_pairs:"weitere Paare",
+  dl:"Daten herunterladen:",
+  foot1:"Transkribiert aus den vom Archiwum Państwowe w Lublinie über Szukaj w Archiwach veröffentlichten Registerscans. Geburtsorte, Alter und Ursachen sind wie 1942 verzeichnet und können von anderen Quellen abweichen; das Register selbst ist maßgeblich für das, was es sagt. Die Schicksalseinträge zitieren die Formulierung jeder Datenbank und verlinken auf deren Datensatz. Eine wahrscheinliche Übereinstimmung ist ein Datensatz, dessen Name passt, dessen Geburtsjahr aber bis zu zwei Jahre vom aus dem Registeralter abgeleiteten Jahr abweicht; sie ist gekennzeichnet, nie still übernommen. Geburtsorte erscheinen wie verzeichnet; der Filter fasst Schreib- und Sprachvarianten desselben Orts unter einem standardisierten Namen zusammen. Zeugennamen sind ebenso standardisiert.",
+  foot2:"Zusammengestellt von Moshe Berman" },
+pl: { tab_register:"Rejestr", tab_stats:"Statystyki", title:"Księga zgonów Opole 1942",
+  intro1:"Przeszukiwalna transkrypcja żydowskiej księgi zgonów z Opola Lubelskiego z 1942 r. Większość zmarłych stanowili Żydzi deportowani z Wiednia w lutym i marcu 1941 r. oraz Żydzi sprowadzeni ze Słowacji w 1942 r. Każdy wpis podaje nazwisko, wiek, odnotowane miejsce urodzenia, datę i godzinę zgonu, świadków oraz jarcyt (hebrajską datę zgonu), a także to, co DÖW, Jad Waszem i Muzeum Holokaustu w USA odnotowują jako los danej osoby.",
+  intro2:"Wybierz wpis (›), aby zobaczyć pełny zapis, odniesienia do losów oraz transkrypcję aktu.",
+  f_search:"Szukaj", f_search_ph:"Nazwisko, miejsce urodzenia, świadek…", f_birth:"Miejsce urodzenia", f_age:"Grupa wiekowa", f_gender:"Płeć",
+  f_cause:"Przyczyna zgonu", f_fate:"Odnotowany los", f_heb:"Jarcyt (miesiąc hebrajski)", f_sort:"Sortowanie", f_page:"Na stronę", all:"Wszystkie",
+  all_birth:"Wszystkie miejsca urodzenia", all_age:"Wszystkie grupy", all_gender:"Wszystkie", all_cause:"Wszystkie przyczyny", all_fate:"Dowolny", all_months:"Wszystkie miesiące",
+  men:"Mężczyźni", women:"Kobiety", fate_any_found:"Znaleziono w bazie", fate_probable:"Prawdopodobne dopasowanie",
+  fate_none_found:"Nie znaleziono zapisu", fate_some_missing:"W części baz jest, w części brak",
+  sort_act:"Numer aktu", sort_date:"Data zgonu", sort_name:"Nazwisko (A–Z)",
+  c_nr:"Nr", c_name:"Nazwisko", c_age:"Wiek", c_birth:"Miejsce urodzenia (odnotowane)", c_died:"Zmarł(a)", c_time:"Godzina", c_wit:"Świadkowie", c_yah:"Jarcyt",
+  entries:"wpisów w księdze", of_entries:"z", match:"wpisów pasuje", index_lbl:"indeks",
+  prev:"← Poprzednia", next:"Następna →", page:"Strona",
+  back:"← Powrót do księgi", d_act:"Akt",
+  d_age:"Wiek", d_birth:"Miejsce urodzenia (odnotowane)", d_std:"Miejscowość (ujednolicona)", d_died:"Data zgonu", d_time:"Godzina zgonu",
+  d_yah:"Jarcyt", d_wit:"Świadkowie", d_occ:"Zawód (odnotowany)", d_mar:"Stan cywilny", d_cause:"Przyczyna zgonu",
+  d_reg:"Zarejestrowano", d_notes:"Uwagi", d_scan:"Skan w księdze", d_of:"z",
+  evening:"Zgon wieczorem; według kalendarza hebrajskiego doba mogła już zmienić się o zachodzie słońca.",
+  not_recorded:"Nie odnotowano", fate_head:"Los, jak odnotowano", this_register:"Ta księga",
+  died_in:"Zmarł(a) w Opolu dnia", at:"o godz.", cause_lbl:"odnotowana przyczyna", view_record:"Zobacz zapis",
+  probable_lbl:"Prawdopodobne dopasowanie", ambiguous_lbl:"Niejednoznaczne: nazwisko znaleziono, żaden kandydat nie pasuje jednocześnie do wieku i nazwiska z księgi",
+  notfound_lbl:"Nie znaleziono", notchecked_lbl:"Jeszcze niesprawdzone", found_lbl:"Znaleziono",
+  open_orig:"Otwórz oryginalną księgę w Szukaj w Archiwach", scan_lbl:"skan",
+  transcription:"Pełna transkrypcja aktu (polski)",
+  legend_found:"znaleziono zapis", legend_probable:"prawdopodobne dopasowanie", legend_ambiguous:"niejednoznaczne", legend_notfound:"nie znaleziono",
+  s_months:"Zgony według miesięcy, 1942", s_ages:"Zgony według wieku", s_gender:"Mężczyźni i kobiety",
+  s_gender_cap:"Płeć podana gramatycznie w każdym akcie (umarł / umarła).",
+  s_causes:"Odnotowana przyczyna zgonu", s_age_time:"Grupy wiekowe w czasie", s_cause_time:"Przyczyna zgonu w czasie",
+  s_age_cause:"Grupy wiekowe według przyczyny zgonu", s_witness:"Pary świadków",
+  s_witness_cap:"Dwóch świadków (zgłaszających) pełniło służbę odcinkami; nowa para oznacza zmianę. Pary uporządkowano według pierwszego wystąpienia; nazwiska świadków ujednolicono, warianty pisowni połączono.",
+  s_places:"Najczęstsze miejsca urodzenia (ujednolicone)",
+  s_places_cap:"Warianty pisowni i języka tej samej miejscowości są połączone; pisownia księgi pozostaje przy każdym wpisie.",
+  s_glossary:"Słowniczek odnotowanych przyczyn zgonu",
+  age_note_pre:"Wieku nie odnotowano w", age_note_suf:"wpisach.",
+  cause_note_pre:"Grupowanie według odnotowanego brzmienia, niemal identyczne formy połączono", cause_note_mid:"różnych form", cause_note_suf:"Przyczyny nie odnotowano w",
+  other:"Inne", witness_pair:"Para świadków", acts:"Akty", span:"Zakres", further_pairs:"dalszych par",
+  dl:"Pobierz dane:",
+  foot1:"Transkrypcja ze skanów księgi opublikowanych przez Archiwum Państwowe w Lublinie w serwisie Szukaj w Archiwach. Miejsca urodzenia, wiek i przyczyny podano tak, jak odnotowano w 1942 r.; mogą różnić się od innych źródeł, a księga sama jest autorytetem w tym, co mówi. Wpisy o losach cytują brzmienie każdej bazy i linkują do jej zapisu. Prawdopodobne dopasowanie to zapis, którego nazwisko pasuje, lecz rok urodzenia odbiega o nie więcej niż dwa lata od roku wynikającego z wieku w księdze; jest oznaczone, nigdy nie łączone po cichu. Miejsca urodzenia pokazano jak odnotowano; filtr łączy warianty pisowni i języka tej samej miejscowości pod ujednoliconą nazwą. Nazwiska świadków ujednolicono w ten sam sposób.",
+  foot2:"Opracował Moshe Berman" }
 };
+const t = k => (I18N[LANG] && I18N[LANG][k]) || I18N.en[k] || k;
 
+// Recorded causes (Polish, folded key) grouped; translations for display in
+// the active language. The recorded wording is never replaced in the data.
+const CAUSE_GROUP = {
+  "wiad starczy": "uwiad starczy", "urzad starczy": "uwiad starczy",
+  "tyfus": "dur plamisty", "tyfus plamisty": "dur plamisty",
+  "zwyrodnienie miesnia serca": "zwyrodnienie miesni serca",
+  "zwyrodnienie miesni sercowych": "zwyrodnienie miesni serca",
+  "zwyrodnienie serca": "zwyrodnienie miesni serca",
+  "zapalenie miesnia serca": "zapalenie miesni serca"
+};
+const CAUSE_TR = {
+  "uwiad starczy": {pl:"uwiąd starczy", en:"Senile decay", de:"Altersschwäche"},
+  "zapalenie pluc": {pl:"zapalenie płuc", en:"Pneumonia", de:"Lungenentzündung"},
+  "zwyrodnienie miesni serca": {pl:"zwyrodnienie mięśnia serca", en:"Degeneration of the heart muscle", de:"Herzmuskeldegeneration"},
+  "wypadek": {pl:"wypadek", en:"Accident", de:"Unfall"},
+  "wada serca": {pl:"wada serca", en:"Heart defect", de:"Herzfehler"},
+  "dur plamisty": {pl:"dur plamisty", en:"Spotted typhus", de:"Flecktyphus"},
+  "zapalenie nerek": {pl:"zapalenie nerek", en:"Kidney inflammation (nephritis)", de:"Nierenentzündung"},
+  "oslabienie serca": {pl:"osłabienie serca", en:"Heart weakness", de:"Herzschwäche"},
+  "gruzlica pluc": {pl:"gruźlica płuc", en:"Pulmonary tuberculosis", de:"Lungentuberkulose"},
+  "obrzek pluc": {pl:"obrzęk płuc", en:"Pulmonary edema", de:"Lungenödem"},
+  "zakazenie krwi": {pl:"zakażenie krwi", en:"Blood poisoning (sepsis)", de:"Blutvergiftung (Sepsis)"},
+  "zgorzel nogi": {pl:"zgorzel nogi", en:"Gangrene of the leg", de:"Gangrän des Beins"},
+  "biegunka": {pl:"biegunka", en:"Diarrhea", de:"Durchfall"},
+  "udar mozgowy": {pl:"udar mózgowy", en:"Stroke", de:"Schlaganfall"},
+  "grypa": {pl:"grypa", en:"Influenza", de:"Grippe"},
+  "nagly wypadek": {pl:"nagły wypadek", en:"Sudden accident", de:"Plötzlicher Unfall"},
+  "ostry niezyt zoladka i kiszek": {pl:"ostry nieżyt żołądka i kiszek", en:"Acute gastroenteritis", de:"Akute Gastroenteritis"},
+  "ostre zapalenie nerek": {pl:"ostre zapalenie nerek", en:"Acute kidney inflammation", de:"Akute Nierenentzündung"},
+  "miazdzyca": {pl:"miażdżyca", en:"Atherosclerosis", de:"Arteriosklerose"},
+  "zapalenie mozgu": {pl:"zapalenie mózgu", en:"Encephalitis", de:"Gehirnentzündung"},
+  "niedostateczna praca serca": {pl:"niedostateczna praca serca", en:"Insufficient heart action", de:"Herzinsuffizienz"},
+  "zapalenie kiszek": {pl:"zapalenie kiszek", en:"Inflammation of the intestines", de:"Darmentzündung"},
+  "astma": {pl:"astma", en:"Asthma", de:"Asthma"},
+  "zapalenie oskrzeli": {pl:"zapalenie oskrzeli", en:"Bronchitis", de:"Bronchitis"},
+  "zapalenie opon mozgowych": {pl:"zapalenie opon mózgowych", en:"Meningitis", de:"Hirnhautentzündung"},
+  "zapalenie miesni serca": {pl:"zapalenie mięśnia serca", en:"Inflammation of the heart muscle (myocarditis)", de:"Herzmuskelentzündung"},
+  "skret kiszek": {pl:"skręt kiszek", en:"Twisted bowel (volvulus)", de:"Darmverschlingung"},
+  "zapalenie pecherza": {pl:"zapalenie pęcherza", en:"Bladder inflammation", de:"Blasenentzündung"},
+  "grypa i wada serca": {pl:"grypa i wada serca", en:"Influenza and heart defect", de:"Grippe und Herzfehler"}
+};
+const GLOSSARY = [
+  ["uwiad starczy", {en:"Senile decay: the period term for death from old-age frailty, the register's most common entry.", de:"Altersschwäche: der zeitgenössische Begriff für Tod an Altersgebrechlichkeit, der häufigste Eintrag des Registers.", pl:"Określenie z epoki na zgon z powodu starości i wycieńczenia; najczęstszy wpis w księdze."}],
+  ["dur plamisty", {en:"Spotted typhus (Flecktyphus): the louse-borne epidemic typhus that swept the ghetto in the winter of 1941/42. Also written tyfus, tyfus plamisty.", de:"Flecktyphus: das von Läusen übertragene epidemische Fleckfieber, das im Winter 1941/42 im Ghetto wütete. Auch als tyfus, tyfus plamisty geschrieben.", pl:"Tyfus plamisty przenoszony przez wszy; epidemia przetoczyła się przez getto zimą 1941/42. Zapisywany też jako tyfus, tyfus plamisty."}],
+  ["zapalenie pluc", {en:"Pneumonia.", de:"Lungenentzündung.", pl:"Zapalenie płuc."}],
+  ["zwyrodnienie miesni serca", {en:"Degeneration of the heart muscle: a catch-all cardiac diagnosis of the period.", de:"Herzmuskeldegeneration: eine pauschale Herzdiagnose der Zeit.", pl:"Zwyrodnienie mięśnia serca: ogólna diagnoza kardiologiczna z epoki."}],
+  ["wada serca", {en:"Heart defect.", de:"Herzfehler.", pl:"Wada serca."}],
+  ["oslabienie serca", {en:"Heart weakness: a period term for heart failure.", de:"Herzschwäche: zeitgenössischer Begriff für Herzversagen.", pl:"Osłabienie serca: określenie z epoki na niewydolność serca."}],
+  ["gruzlica pluc", {en:"Pulmonary tuberculosis.", de:"Lungentuberkulose.", pl:"Gruźlica płuc."}],
+  ["zapalenie nerek", {en:"Kidney inflammation (nephritis).", de:"Nierenentzündung (Nephritis).", pl:"Zapalenie nerek."}],
+  ["obrzek pluc", {en:"Pulmonary edema: fluid in the lungs, often the final stage of heart failure.", de:"Lungenödem: Flüssigkeit in der Lunge, oft Endstadium einer Herzschwäche.", pl:"Obrzęk płuc: płyn w płucach, często końcowe stadium niewydolności serca."}],
+  ["zakazenie krwi", {en:"Blood poisoning (sepsis).", de:"Blutvergiftung (Sepsis).", pl:"Zakażenie krwi (posocznica)."}],
+  ["wypadek", {en:"Accident; the register gives no further detail.", de:"Unfall; das Register gibt keine näheren Angaben.", pl:"Wypadek; księga nie podaje szczegółów."}],
+  ["udar mozgowy", {en:"Stroke (cerebral hemorrhage).", de:"Schlaganfall (Hirnblutung).", pl:"Udar mózgowy (wylew)."}],
+  ["biegunka", {en:"Diarrhea: a recorded cause chiefly for infants, often standing for dysentery or dehydration.", de:"Durchfall: vor allem bei Säuglingen verzeichnet, oft für Ruhr oder Austrocknung stehend.", pl:"Biegunka: przyczyna odnotowywana głównie u niemowląt, często oznaczająca czerwonkę lub odwodnienie."}]
+];
+
+let DATA = [], filtered = [], page = 1, currentDetail = null;
 const $ = s => document.querySelector(s);
 const esc = s => (s ?? "").toString().replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const fmtDate = iso => {
   if(!iso) return "";
   const [y,m,d] = iso.split("-").map(Number);
-  const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  const months = {en:["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
+                  de:["Jan","Feb","Mär","Apr","Mai","Jun","Jul","Aug","Sep","Okt","Nov","Dez"],
+                  pl:["sty","lut","mar","kwi","maj","cze","lip","sie","wrz","paź","lis","gru"]}[LANG];
   return `${d} ${months[m-1]} ${y}`;
-};
-const surnameKey = name => {
-  if(!name) return "";
-  const parts = name.replace(/\s+vel\s+/i, " vel ").split(" ");
-  return name.toLowerCase();
 };
 const fold = s => (s || "").toLowerCase().replace(/ł/g, "l").replace(/đ/g, "d")
   .normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+const surnameKey = name => (name || "").toLowerCase();
+const pageSize = () => {
+  const v = $("#fPage").value;
+  return v === "all" ? Math.max(1, filtered.length) : Number(v);
+};
+const ageYears = r => r.age == null ? null
+  : r.age_unit === "months" ? r.age / 12 : r.age_unit === "weeks" ? r.age / 52 : r.age;
+const AGE_GROUPS = [
+  {id:"g0", label:"<1", test:y => y < 1},
+  {id:"g1", label:"1–17", test:y => y >= 1 && y < 18},
+  {id:"g2", label:"18–49", test:y => y >= 18 && y < 50},
+  {id:"g3", label:"50–69", test:y => y >= 50 && y < 70},
+  {id:"g4", label:"70+", test:y => y >= 70}
+];
+const ageGroupOf = r => { const y = ageYears(r); if(y == null) return null;
+  const g = AGE_GROUPS.find(g => g.test(y)); return g ? g.id : null; };
+const causeKey = r => {
+  const c = (r.cause_of_death || "").trim().replace(/[.\s]+$/, "");
+  if(!c) return null;
+  const k = fold(c);
+  return CAUSE_GROUP[k] || k;
+};
+const causeLabel = r => {
+  const k = causeKey(r);
+  if(!k) return "";
+  const tr = CAUSE_TR[k];
+  if(LANG === "pl") return (r.cause_of_death || "").trim();
+  return tr ? tr[LANG] : (r.cause_of_death || "").trim();
+};
+const fateStatuses = r => [r.dow_status, r.yadvashem_status, r.ushmm_status];
+function fateMatch(r, mode){
+  const ss = fateStatuses(r);
+  if(mode === "found") return ss.includes("found");
+  if(mode === "probable") return ss.includes("probable");
+  if(mode === "none") return ss.every(s => s === "not_found");
+  if(mode === "mixed") return ss.includes("found") && ss.includes("not_found");
+  return true;
+}
 
 function applyFilters(){
   const q = fold($("#q").value.trim());
   const fb = $("#fBirth").value, fh = $("#fHeb").value, sort = $("#fSort").value;
+  const fa = $("#fAge").value, fg = $("#fGender").value, fc = $("#fCause").value, ff = $("#fFate").value;
   filtered = DATA.filter(r => {
     if(fb && (r.birthplace_std || r.birthplace) !== fb) return false;
+    if(fa && ageGroupOf(r) !== fa) return false;
+    if(fg && r.gender !== fg) return false;
+    if(fc && causeKey(r) !== fc) return false;
+    if(ff && !fateMatch(r, ff)) return false;
     if(fh && !(r.yahrtzeit || "").endsWith(fh) && !(r.yahrtzeit || "").includes(" " + fh)) return false;
     if(q){
-      const hay = fold([r.name, r.name_in_index, r.birthplace, r.birthplace_std, r.witnesses, r.occupation, r.cause_of_death]
+      const hay = fold([r.name, r.name_in_index, r.birthplace, r.birthplace_std, r.witnesses, r.occupation, r.cause_of_death, causeLabel(r)]
         .filter(Boolean).join(" "));
       if(!q.split(/\s+/).every(tok => hay.includes(tok))) return false;
     }
@@ -256,6 +480,14 @@ function applyFilters(){
   render();
 }
 
+function fateDot(status){
+  const cls = {found:"dot-found", probable:"dot-probable", ambiguous:"dot-ambiguous",
+               not_found:"dot-notfound", not_checked:"dot-notfound"}[status] || "dot-notfound";
+  const lbl = {found:t("found_lbl"), probable:t("probable_lbl"), ambiguous:t("ambiguous_lbl"),
+               not_found:t("notfound_lbl"), not_checked:t("notchecked_lbl")}[status] || status;
+  return `<span class="dot ${cls}" title="${esc(lbl)}"></span>`;
+}
+
 function render(){
   const total = filtered.length;
   const PAGE = pageSize();
@@ -264,27 +496,32 @@ function render(){
   const start = (page - 1) * PAGE;
   const slice = filtered.slice(start, start + PAGE);
   $("#countLine").textContent = total === DATA.length
-    ? `${total} entries in the register`
-    : `${total} of ${DATA.length} entries match`;
+    ? `${total} ${t("entries")}`
+    : `${total} ${t("of_entries")} ${DATA.length} ${t("match")}`;
+  $("#fateLegend").innerHTML =
+    `<span class="dot dot-found"></span> ${t("legend_found")} &nbsp; <span class="dot dot-probable"></span> ${t("legend_probable")} &nbsp; <span class="dot dot-ambiguous"></span> ${t("legend_ambiguous")} &nbsp; <span class="dot dot-notfound"></span> ${t("legend_notfound")} &nbsp;·&nbsp; DÖW / YV / USHMM`;
   $("#rows").innerHTML = slice.map(r => `
     <tr data-act="${r.act_no}" tabindex="0" role="button" aria-label="Entry ${r.act_no}, ${esc(r.name)}">
       <td class="nr">${r.act_no}</td>
-      <td class="name">${esc(r.name)}${r.name_in_index && r.name_in_index !== r.name ? `<span class="sub">index: ${esc(r.name_in_index)}</span>` : ""}</td>
+      <td class="name">${esc(r.name)}${r.name_in_index && r.name_in_index !== r.name ? `<span class="sub">${t("index_lbl")}: ${esc(r.name_in_index)}</span>` : ""}</td>
       <td>${r.age ?? ""}${r.age_unit && r.age_unit !== "years" ? " " + esc(r.age_unit) : ""}</td>
       <td>${esc(r.birthplace || "")}</td>
       <td class="date">${fmtDate(r.death_date)}</td>
       <td>${esc(r.death_time || "")}</td>
       <td>${esc(r.witnesses || "")}</td>
       <td>${esc(r.yahrtzeit || "")}</td>
+      <td class="fate">${fateDot(r.dow_status)}</td>
+      <td class="fate">${fateDot(r.yadvashem_status)}</td>
+      <td class="fate">${fateDot(r.ushmm_status)}</td>
+      <td class="chev">›</td>
     </tr>`).join("");
   document.querySelectorAll("#rows tr").forEach(tr => {
     tr.addEventListener("click", () => openDetail(Number(tr.dataset.act)));
     tr.addEventListener("keydown", e => { if(e.key === "Enter") openDetail(Number(tr.dataset.act)); });
   });
-  // pager
   const p = $("#pager");
   let btns = "";
-  btns += `<button ${page <= 1 ? "disabled" : ""} data-pg="prev">&larr; Previous</button>`;
+  btns += `<button ${page <= 1 ? "disabled" : ""} data-pg="prev">${t("prev")}</button>`;
   const windowPages = [];
   for(let i = 1; i <= pages; i++){
     if(i === 1 || i === pages || Math.abs(i - page) <= 2) windowPages.push(i);
@@ -295,87 +532,92 @@ function render(){
       ? `<span class="info">&hellip;</span>`
       : `<button data-pg="${wp}" class="${wp === page ? "current" : ""}">${wp}</button>`;
   }
-  btns += `<button ${page >= pages ? "disabled" : ""} data-pg="next">Next &rarr;</button>`;
-  btns += `<span class="info">Page ${page} of ${pages}</span>`;
+  btns += `<button ${page >= pages ? "disabled" : ""} data-pg="next">${t("next")}</button>`;
+  btns += `<span class="info">${t("page")} ${page} / ${pages}</span>`;
   p.innerHTML = btns;
   p.querySelectorAll("button[data-pg]").forEach(b => b.addEventListener("click", () => {
     const v = b.dataset.pg;
     page = v === "prev" ? page - 1 : v === "next" ? page + 1 : Number(v);
     render();
-    window.scrollTo({top: 0, behavior: "smooth"});
+    window.scrollTo({top: 0});
   }));
 }
 
+function field(label, value, asWritten){
+  if(value == null || value === "") return "";
+  return `<div><dt>${esc(label)}</dt><dd>${esc(value)}${asWritten ? `<span class="asw">${esc(asWritten)}</span>` : ""}</dd></div>`;
+}
 function fateCell(label, status, fate, url){
   let body;
   if(status === "found"){
-    body = `<span class="status-found">${esc(fate || "Record found")}</span>`;
-    if(url) body += `<br><a href="${esc(url)}" target="_blank" rel="noopener">View record</a>`;
+    body = `<span>${esc(fate || t("found_lbl"))}</span>`;
+    if(url) body += `<br><a href="${esc(url)}" target="_blank" rel="noopener">${t("view_record")}</a>`;
   } else if(status === "probable"){
-    body = `<span class="status-probable"><strong>Probable match</strong> &mdash; ${esc(fate || "Record found")}</span>`;
-    if(url) body += `<br><a href="${esc(url)}" target="_blank" rel="noopener">View record</a>`;
+    body = `<span class="status-probable"><strong>${t("probable_lbl")}</strong> &mdash; ${esc(fate || "")}</span>`;
+    if(url) body += `<br><a href="${esc(url)}" target="_blank" rel="noopener">${t("view_record")}</a>`;
   } else if(status === "ambiguous"){
-    body = `<span class="status-ambiguous">Possible match, not confirmed${fate ? " — " + esc(fate) : ""}</span>`;
-    if(url) body += `<br><a href="${esc(url)}" target="_blank" rel="noopener">View record</a>`;
+    body = `<span class="status-ambiguous">${t("ambiguous_lbl")}</span>`;
   } else if(status === "not_checked"){
-    body = `<span class="status-notfound">Not yet checked</span>`;
+    body = `<span class="status-notfound">${t("notchecked_lbl")}</span>`;
   } else {
-    body = `<span class="status-notfound">Not found</span>`;
+    body = `<span class="status-notfound">${t("notfound_lbl")}</span>`;
   }
-  return `<tr><th>${label}</th><td>${body}</td></tr>`;
+  return `<tr><th>${esc(label)}</th><td>${body}</td></tr>`;
 }
 
 function openDetail(actNo){
   const r = DATA.find(x => x.act_no === actNo);
   if(!r) return;
+  currentDetail = actNo;
   const d = $("#detail");
-  const field = (label, value, asWritten) => value ? `
-    <div><dt>${label}</dt><dd>${esc(value)}${asWritten ? `<span class="aswritten">as written: ${esc(asWritten)}</span>` : ""}</dd></div>` : "";
+  const causeDisp = LANG === "pl"
+    ? field(t("d_cause"), r.cause_of_death)
+    : field(t("d_cause"), causeLabel(r), r.cause_of_death ? `${t("cause_lbl")}: ${r.cause_of_death}` : null);
   d.innerHTML = `
-    <button class="backbtn" id="backBtn">&larr; Back to the register</button>
-    <div class="record-card">
-      <h2><span class="nr">Death act Nr ${r.act_no} &middot; 1942</span>${esc(r.name)}</h2>
+    <div class="card">
+      <button class="backbtn" id="backBtn">${t("back")}</button>
+      <h2>${esc(r.name)}</h2>
       <dl class="fields">
-        ${field("Age", r.age != null ? r.age + (r.age_unit && r.age_unit !== "years" ? " " + r.age_unit : "") : null, r.age_as_written)}
-        ${field("Birthplace (recorded)", r.birthplace || "Not recorded", r.birthplace_as_written)}
-        ${r.birthplace_std && r.birthplace_std !== r.birthplace ? field("Place (standardized)", r.birthplace_std) : ""}
-        ${field("Date of death", fmtDate(r.death_date))}
-        ${field("Time of death", r.death_time || "Not recorded", r.death_time_as_written)}
-        ${field("Hebrew date of death", r.hebrew_date)}
-        ${field("Yahrtzeit", r.yahrtzeit)}
-        ${field("Witnesses", r.witnesses)}
-        ${field("Occupation (recorded)", r.occupation)}
-        ${field("Marital status", r.marital_status)}
-        ${field("Cause of death (recorded)", r.cause_of_death)}
-        ${field("Registered", fmtDate(r.registration_date))}
-        ${field("Notes", [r.notes, r.evening_death ? "Died in the evening; by the Hebrew calendar the day may already have turned at sunset." : null].filter(Boolean).join(" ") || null)}
-        ${field("Register scan", "Scan " + r.scan + " of 171")}
+        ${field(t("d_act"), "Nr " + r.act_no)}
+        ${field(t("d_age"), r.age == null ? null : r.age + (r.age_unit && r.age_unit !== "years" ? " " + r.age_unit : ""), r.age_as_written)}
+        ${field(t("d_birth"), r.birthplace || t("not_recorded"), r.birthplace_as_written)}
+        ${r.birthplace_std && r.birthplace_std !== r.birthplace ? field(t("d_std"), r.birthplace_std) : ""}
+        ${field(t("d_died"), fmtDate(r.death_date))}
+        ${field(t("d_time"), r.death_time, r.death_time_as_written)}
+        ${field(t("d_yah"), r.yahrtzeit)}
+        ${field(t("d_wit"), r.witnesses)}
+        ${field(t("d_occ"), r.occupation)}
+        ${field(t("d_mar"), r.marital_status)}
+        ${causeDisp}
+        ${field(t("d_reg"), fmtDate(r.registration_date))}
+        ${field(t("d_notes"), [r.notes, r.evening_death ? t("evening") : null].filter(Boolean).join(" ") || null)}
+        ${field(t("d_scan"), t("scan_lbl") + " " + r.scan + " " + t("d_of") + " 171")}
       </dl>
-      <h3 style="margin:.6em 0 .2em">Fate, as recorded</h3>
+      <h3 style="margin:.6em 0 .2em">${t("fate_head")}</h3>
       <table class="fates">
-        <tr><th>This register</th><td><span class="status-found">Died in Opole on ${fmtDate(r.death_date)}${r.death_time ? " at " + esc(r.death_time) : ""}${r.cause_of_death ? "; recorded cause: " + esc(r.cause_of_death) : ""} (act Nr ${r.act_no}, scan ${r.scan})</span></td></tr>
+        <tr><th>${t("this_register")}</th><td><span>${t("died_in")} ${fmtDate(r.death_date)}${r.death_time ? " " + t("at") + " " + esc(r.death_time) : ""}${r.cause_of_death ? "; " + t("cause_lbl") + ": " + esc(LANG === "pl" ? r.cause_of_death : causeLabel(r)) : ""} (${t("d_act")} Nr ${r.act_no}, ${t("scan_lbl")} ${r.scan})</span></td></tr>
         ${fateCell("DÖW (Vienna)", r.dow_status, r.dow_fate, r.dow_url)}
         ${fateCell("Yad Vashem", r.yadvashem_status, r.yadvashem_fate, r.yadvashem_url)}
         ${fateCell("USHMM", r.ushmm_status, r.ushmm_fate, r.ushmm_url)}
       </table>
-      <p style="font-size:.9rem"><a href="https://www.szukajwarchiwach.gov.pl/jednostka/-/jednostka/39731697" target="_blank" rel="noopener">Open the original register at Szukaj w Archiwach</a> (scan ${r.scan})</p>
-      ${r.transcription_pl ? `<details><summary>Full transcription of the act (Polish)</summary><div class="transcription">${esc(r.transcription_pl)}</div></details>` : ""}
+      <p style="font-size:.9rem"><a href="https://www.szukajwarchiwach.gov.pl/jednostka/-/jednostka/39731697" target="_blank" rel="noopener">${t("open_orig")}</a> (${t("scan_lbl")} ${r.scan})</p>
+      ${r.transcription_pl ? `<details><summary>${t("transcription")}</summary><div class="transcription">${esc(r.transcription_pl)}</div></details>` : ""}
     </div>`;
   d.classList.add("open");
   $("#listView").style.display = "none";
   $("#statsView").style.display = "none";
-  $("#viewTabs").style.display = "none";
-  $(".controls").style.display = "none";
+  $("#controls").style.display = "none";
   $("#countLine").style.display = "none";
+  $("#fateLegend").style.display = "none";
   $("#backBtn").addEventListener("click", closeDetail);
   history.replaceState(null, "", "#act-" + actNo);
   window.scrollTo({top: 0});
 }
 
 function closeDetail(){
+  currentDetail = null;
   $("#detail").classList.remove("open");
   $("#detail").innerHTML = "";
-  $("#viewTabs").style.display = "";
   showList();
   history.replaceState(null, "", location.pathname);
 }
@@ -394,7 +636,6 @@ function barChart(items){
   });
   return `<svg viewBox="0 0 ${w} ${h}" role="img">${s}</svg>`;
 }
-
 function hbarChart(items, labelW){
   const w = 520, lh = 23;
   const max = Math.max(...items.map(i => i.value), 1);
@@ -408,93 +649,191 @@ function hbarChart(items, labelW){
   });
   return `<svg viewBox="0 0 ${w} ${h}" role="img">${s}</svg>`;
 }
+const PALETTE = ["#7c2222", "#a5502e", "#b39b6d", "#5a4632", "#8a6f45", "#d8c49a"];
+function stackedV(cats, series){
+  // cats: x labels; series: [{label, color, values[]}]
+  const w = 520, h = 210, padB = 34, padT = 16, padX = 8;
+  const totals = cats.map((_, i) => series.reduce((s, sr) => s + sr.values[i], 0));
+  const max = Math.max(...totals, 1);
+  const bw = (w - 2 * padX) / cats.length;
+  let s = "";
+  cats.forEach((c, i) => {
+    let y = h - padB;
+    series.forEach(sr => {
+      const bh = (h - padB - padT) * sr.values[i] / max;
+      if(bh > 0.5) s += `<rect x="${(padX + i * bw + 2).toFixed(1)}" y="${(y - bh).toFixed(1)}" width="${(bw - 4).toFixed(1)}" height="${bh.toFixed(1)}" fill="${sr.color}"><title>${esc(sr.label)}: ${sr.values[i]}</title></rect>`;
+      y -= bh;
+    });
+    s += `<text x="${(padX + i * bw + bw / 2).toFixed(1)}" y="${(y - 4).toFixed(1)}" text-anchor="middle" font-size="11" fill="#2e2118">${totals[i]}</text>`
+      + `<text x="${(padX + i * bw + bw / 2).toFixed(1)}" y="${h - padB + 16}" text-anchor="middle" font-size="11" fill="#5a4632">${esc(c)}</text>`;
+  });
+  return `<svg viewBox="0 0 ${w} ${h}" role="img">${s}</svg>`;
+}
+function stackedH(rows, series, labelW){
+  // rows: labels; series values aligned to rows
+  const w = 520, lh = 25;
+  const totals = rows.map((_, i) => series.reduce((s, sr) => s + sr.values[i], 0));
+  const max = Math.max(...totals, 1);
+  const h = rows.length * lh + 6;
+  let s = "";
+  rows.forEach((label, i) => {
+    const y = i * lh + 4;
+    let x = labelW;
+    s += `<text x="0" y="${y + 13}" font-size="12" fill="#2e2118">${esc(label)}</text>`;
+    series.forEach(sr => {
+      const bw = (w - labelW - 46) * sr.values[i] / max;
+      if(bw > 0.5) s += `<rect x="${x.toFixed(1)}" y="${y + 2}" width="${bw.toFixed(1)}" height="14" fill="${sr.color}"><title>${esc(sr.label)}: ${sr.values[i]}</title></rect>`;
+      x += bw;
+    });
+    s += `<text x="${(x + 6).toFixed(1)}" y="${y + 13}" font-size="12" fill="#2e2118">${totals[i]}</text>`;
+  });
+  return `<svg viewBox="0 0 ${w} ${h}" role="img">${s}</svg>`;
+}
+const legendHTML = series => series.map(sr => `<span><span class="sw" style="background:${sr.color}"></span>${esc(sr.label)}</span>`).join("");
+const monthNames = () => ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
 function buildStats(){
-  const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  const months = monthNames();
   const byMonth = months.map(m => ({label: m, value: 0}));
   DATA.forEach(r => { if(r.death_date) byMonth[Number(r.death_date.slice(5, 7)) - 1].value++; });
   $("#chartMonths").innerHTML = barChart(byMonth);
 
-  const bucketNames = ["<1","1\u20134","5\u20139","10\u201319","20\u201329","30\u201339","40\u201349","50\u201359","60\u201369","70\u201379","80\u201389","90+"];
+  const bucketNames = ["<1","1–4","5–9","10–19","20–29","30–39","40–49","50–59","60–69","70–79","80–89","90+"];
   const buckets = bucketNames.map(b => ({label: b, value: 0}));
   let noAge = 0;
   DATA.forEach(r => {
-    if(r.age == null){ noAge++; return; }
-    const yrs = r.age_unit === "months" ? r.age / 12 : r.age_unit === "weeks" ? r.age / 52 : r.age;
-    const idx = yrs < 1 ? 0 : yrs < 5 ? 1 : yrs < 10 ? 2 : Math.min(11, 3 + Math.floor((yrs - 10) / 10));
+    const y = ageYears(r);
+    if(y == null){ noAge++; return; }
+    const idx = y < 1 ? 0 : y < 5 ? 1 : y < 10 ? 2 : Math.min(11, 3 + Math.floor((y - 10) / 10));
     buckets[idx].value++;
   });
   $("#chartAges").innerHTML = barChart(buckets);
-  $("#ageNote").textContent = noAge ? `Age not recorded for ${noAge} ${noAge === 1 ? "entry" : "entries"}.` : "";
+  $("#ageNote").textContent = noAge ? `${t("age_note_pre")} ${noAge} ${t("age_note_suf")}` : "";
 
   const gm = DATA.filter(r => r.gender === "male").length;
   const gf = DATA.filter(r => r.gender === "female").length;
-  $("#chartGender").innerHTML = hbarChart([{label: "Men", value: gm}, {label: "Women", value: gf}], 70);
+  $("#chartGender").innerHTML = hbarChart([{label: t("men"), value: gm}, {label: t("women"), value: gf}], 80);
 
   const causes = {};
   let noCause = 0;
   DATA.forEach(r => {
-    const c = (r.cause_of_death || "").trim().replace(/[.\s]+$/, "");
-    if(!c){ noCause++; return; }
-    let k = fold(c);
-    if(k === "wiad starczy") k = "uwiad starczy"; // same wording, initial letter dropped in some acts
-    causes[k] = causes[k] || {label: k === "uwiad starczy" ? "uwiąd starczy" : c, value: 0};
-    causes[k].value++;
+    const k = causeKey(r);
+    if(!k){ noCause++; return; }
+    causes[k] = (causes[k] || 0) + 1;
   });
-  const topCauses = Object.values(causes).sort((a, b) => b.value - a.value).slice(0, 12);
-  $("#chartCauses").innerHTML = hbarChart(topCauses, 205);
-  $("#causeNote").textContent = `Grouped by the recorded wording (${Object.keys(causes).length} distinct forms). Cause not recorded for ${noCause} entries. The acts name the certifying feldsher Dibik.`;
+  const causeName = k => { const tr = CAUSE_TR[k]; return LANG === "pl" ? (tr ? tr.pl : k) : (tr ? tr[LANG] : k); };
+  const topCauses = Object.entries(causes).sort((a, b) => b[1] - a[1]).slice(0, 12);
+  $("#chartCauses").innerHTML = hbarChart(topCauses.map(([k, v]) => ({label: causeName(k), value: v})), 215);
+  $("#causeNote").textContent = `${t("cause_note_pre")} (${Object.keys(causes).length} ${t("cause_note_mid")}). ${t("cause_note_suf")} ${noCause}.`;
+
+  // facets
+  const midx = r => r.death_date ? Number(r.death_date.slice(5, 7)) - 1 : -1;
+  const ageSeries = AGE_GROUPS.map((g, i) => ({label: g.label, color: PALETTE[i],
+    values: months.map((_, mi) => DATA.filter(r => midx(r) === mi && ageGroupOf(r) === g.id).length)}));
+  $("#chartAgeTime").innerHTML = stackedV(months, ageSeries);
+  $("#legendAge").innerHTML = legendHTML(ageSeries);
+  $("#legendAge2").innerHTML = legendHTML(ageSeries);
+
+  const top5 = Object.entries(causes).sort((a, b) => b[1] - a[1]).slice(0, 5).map(e => e[0]);
+  const causeSeries = top5.map((k, i) => ({label: causeName(k), color: PALETTE[i],
+    values: months.map((_, mi) => DATA.filter(r => midx(r) === mi && causeKey(r) === k).length)}));
+  causeSeries.push({label: t("other"), color: PALETTE[5],
+    values: months.map((_, mi) => DATA.filter(r => midx(r) === mi && causeKey(r) && !top5.includes(causeKey(r))).length)});
+  $("#chartCauseTime").innerHTML = stackedV(months, causeSeries);
+  $("#legendCause").innerHTML = legendHTML(causeSeries);
+
+  const top6 = Object.entries(causes).sort((a, b) => b[1] - a[1]).slice(0, 6).map(e => e[0]);
+  const acSeries = AGE_GROUPS.map((g, i) => ({label: g.label, color: PALETTE[i],
+    values: top6.map(k => DATA.filter(r => causeKey(r) === k && ageGroupOf(r) === g.id).length)}));
+  $("#chartAgeCause").innerHTML = stackedH(top6.map(causeName), acSeries, 215);
 
   const pairs = new Map();
   DATA.forEach(r => {
     if(!r.witness_1 || !r.witness_2) return;
-    // Group by the two people, ignoring which is named first and the name
-    // order inside each name (the acts write them both ways). Spelling
-    // variants are NOT merged, so garbled later-act spellings stay separate.
-    const keyOf = w => fold(w).split(/\s+/).sort().join(" ");
-    const k = [keyOf(r.witness_1), keyOf(r.witness_2)].sort().join(" + ");
-    if(!pairs.has(k)) pairs.set(k, {acts: [], labels: {}});
-    const e = pairs.get(k);
-    e.acts.push(r.act_no);
-    const lbl = r.witness_1 + " + " + r.witness_2;
-    e.labels[lbl] = (e.labels[lbl] || 0) + 1;
+    const k = [r.witness_1, r.witness_2].sort().join(" + ");
+    if(!pairs.has(k)) pairs.set(k, []);
+    pairs.get(k).push(r.act_no);
   });
-  const pairRows = [...pairs.values()].map(e => ({
-    acts: e.acts,
-    label: Object.entries(e.labels).sort((a, b) => b[1] - a[1])[0][0]
-  })).sort((a, b) => a.acts[0] - b.acts[0]);
+  const pairRows = [...pairs.entries()].sort((a, b) => a[1][0] - b[1][0]);
   const shown = pairRows.slice(0, 10);
-  const restActs = pairRows.slice(10).reduce((s, e) => s + e.acts.length, 0);
-  $("#witnessStats").innerHTML = `<table class="stat-table"><tr><th>Witness pair</th><th>Acts</th><th>Span</th></tr>`
-    + shown.map(e => `<tr><td>${esc(e.label)}</td><td>${e.acts.length}</td><td>${Math.min(...e.acts)}\u2013${Math.max(...e.acts)}</td></tr>`).join("")
-    + (restActs ? `<tr><td><em>${pairRows.length - 10} further pairs (incl. spelling variants)</em></td><td>${restActs}</td><td></td></tr>` : "")
+  const restActs = pairRows.slice(10).reduce((s, [, v]) => s + v.length, 0);
+  $("#witnessStats").innerHTML = `<table class="stat-table"><tr><th>${t("witness_pair")}</th><th>${t("acts")}</th><th>${t("span")}</th></tr>`
+    + shown.map(([k, v]) => `<tr><td>${esc(k)}</td><td>${v.length}</td><td>${Math.min(...v)}–${Math.max(...v)}</td></tr>`).join("")
+    + (restActs ? `<tr><td><em>${pairRows.length - 10} ${t("further_pairs")}</em></td><td>${restActs}</td><td></td></tr>` : "")
     + `</table>`;
 
   const places = {};
   DATA.forEach(r => { const b = r.birthplace_std || r.birthplace; if(b) places[b] = (places[b] || 0) + 1; });
   const topPlaces = Object.entries(places).sort((a, b) => b[1] - a[1]).slice(0, 10);
   $("#placeStats").innerHTML = hbarChart(topPlaces.map(([label, value]) => ({label, value})), 170);
+
+  $("#glossary").innerHTML = GLOSSARY.map(([k, txt]) =>
+    `<div><b>${esc(CAUSE_TR[k] ? CAUSE_TR[k][LANG] : k)}</b> — ${esc(txt[LANG] || txt.en)}${LANG !== "pl" ? ` <span style="color:var(--ink-soft)">(${esc(CAUSE_TR[k].pl)})</span>` : ""}</div>`).join("");
 }
 
 function showStats(){
+  currentDetail = null;
+  $("#detail").classList.remove("open");
+  $("#detail").innerHTML = "";
+  history.replaceState(null, "", location.pathname);
   $("#statsView").style.display = "";
   $("#listView").style.display = "none";
-  $(".controls").style.display = "none";
+  $("#controls").style.display = "none";
   $("#countLine").style.display = "none";
+  $("#fateLegend").style.display = "none";
   $("#tabStats").classList.add("current");
   $("#tabList").classList.remove("current");
   buildStats();
   window.scrollTo({top: 0});
 }
-
 function showList(){
+  if(currentDetail != null){
+    currentDetail = null;
+    $("#detail").classList.remove("open");
+    $("#detail").innerHTML = "";
+    history.replaceState(null, "", location.pathname);
+  }
   $("#statsView").style.display = "none";
   $("#listView").style.display = "";
-  $(".controls").style.display = "";
+  $("#controls").style.display = "";
   $("#countLine").style.display = "";
+  $("#fateLegend").style.display = "";
   $("#tabList").classList.add("current");
   $("#tabStats").classList.remove("current");
-  window.scrollTo({top: 0});
+  if(currentDetail == null) window.scrollTo({top: 0});
+}
+
+function buildFilterOptions(){
+  const bpCounts = {};
+  DATA.forEach(r => { const b = r.birthplace_std || r.birthplace; if(b) bpCounts[b] = (bpCounts[b] || 0) + 1; });
+  const curB = $("#fBirth").value;
+  $("#fBirth").innerHTML = `<option value="">${t("all_birth")}</option>`
+    + Object.keys(bpCounts).sort().map(b => `<option value="${esc(b)}">${esc(b)} (${bpCounts[b]})</option>`).join("");
+  $("#fBirth").value = curB;
+  $("#fAge").innerHTML = `<option value="">${t("all_age")}</option>`
+    + AGE_GROUPS.map(g => `<option value="${g.id}">${g.label}</option>`).join("");
+  $("#fGender").innerHTML = `<option value="">${t("all_gender")}</option><option value="male">${t("men")}</option><option value="female">${t("women")}</option>`;
+  const causeCounts = {};
+  DATA.forEach(r => { const k = causeKey(r); if(k) causeCounts[k] = (causeCounts[k] || 0) + 1; });
+  const causeName = k => { const tr = CAUSE_TR[k]; return LANG === "pl" ? (tr ? tr.pl : k) : (tr ? tr[LANG] : k); };
+  $("#fCause").innerHTML = `<option value="">${t("all_cause")}</option>`
+    + Object.entries(causeCounts).sort((a, b) => b[1] - a[1]).map(([k, v]) => `<option value="${esc(k)}">${esc(causeName(k))} (${v})</option>`).join("");
+  $("#fFate").innerHTML = `<option value="">${t("all_fate")}</option>`
+    + `<option value="found">${t("fate_any_found")}</option><option value="probable">${t("fate_probable")}</option>`
+    + `<option value="mixed">${t("fate_some_missing")}</option><option value="none">${t("fate_none_found")}</option>`;
+  const hebMonths = ["Nisan","Iyar","Sivan","Tammuz","Av","Elul","Tishrei","Cheshvan","Kislev","Tevet","Shevat","Adar","Adar II"];
+  $("#fHeb").innerHTML = `<option value="">${t("all_months")}</option>` + hebMonths.map(m => `<option>${m}</option>`).join("");
+  $("#fSort").innerHTML = `<option value="act">${t("sort_act")}</option><option value="date">${t("sort_date")}</option><option value="name">${t("sort_name")}</option>`;
+}
+
+function applyLang(){
+  document.querySelectorAll("[data-i18n]").forEach(el => { el.textContent = t(el.dataset.i18n); });
+  document.querySelectorAll("[data-i18n-ph]").forEach(el => { el.placeholder = t(el.dataset.i18nPh); });
+  document.documentElement.lang = LANG;
+  buildFilterOptions();
+  if(currentDetail != null) openDetail(currentDetail);
+  else if($("#statsView").style.display !== "none") buildStats();
+  else applyFilters();
 }
 
 async function init(){
@@ -505,14 +844,18 @@ async function init(){
     $("#countLine").textContent = "The register data could not be loaded.";
     return;
   }
-  const bpCounts = {};
-  DATA.forEach(r => { const b = r.birthplace_std || r.birthplace; if(b) bpCounts[b] = (bpCounts[b] || 0) + 1; });
-  const bps = Object.keys(bpCounts).sort();
-  $("#fBirth").innerHTML = `<option value="">All birthplaces</option>` + bps.map(b => `<option value="${esc(b)}">${esc(b)} (${bpCounts[b]})</option>`).join("");
-  ["q","fBirth","fHeb","fSort","fPage"].forEach(id => $("#" + id).addEventListener("input", applyFilters));
+  $("#langSel").value = LANG;
+  $("#langSel").addEventListener("change", () => {
+    LANG = $("#langSel").value;
+    localStorage.setItem("opole-lang", LANG);
+    applyLang();
+  });
+  buildFilterOptions();
+  ["q","fBirth","fHeb","fSort","fPage","fAge","fGender","fCause","fFate"]
+    .forEach(id => $("#" + id).addEventListener("input", applyFilters));
   $("#tabStats").addEventListener("click", showStats);
   $("#tabList").addEventListener("click", showList);
-  applyFilters();
+  applyLang();
   const m = location.hash.match(/act-(\d+)/);
   if(m) openDetail(Number(m[1]));
 }
