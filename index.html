@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Opole 1942 Death Register — Księga Zgonów</title>
+<meta name="description" content="Searchable transcription of the 1942 Jewish death register of Opole Lubelskie (Archiwum Państwowe w Lublinie, 35/1763/0/1.3/28), with Hebrew yahrtzeit dates and fate cross-references to DÖW, Yad Vashem, and USHMM.">
+<style>
+  :root{
+    --paper:#f6efdd; --paper2:#efe5cc; --ink:#2e2118; --ink-soft:#5a4632;
+    --rule:#b39b6d; --rule-dark:#8a6f45; --accent:#7c2222; --accent-soft:#a5502e;
+    --card:#fbf7ec; --shadow:0 1px 4px rgba(46,33,24,.18);
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0; background:var(--paper);
+    background-image:radial-gradient(ellipse at top, #faf3e0 0%, var(--paper) 55%, var(--paper2) 100%);
+    color:var(--ink); font-family:Georgia,'Times New Roman',serif; line-height:1.45;
+  }
+  .wrap{max-width:1060px; margin:0 auto; padding:20px 16px 48px}
+  header{text-align:center; padding:26px 10px 18px; border-bottom:4px double var(--rule-dark); margin-bottom:8px}
+  .archive-line{letter-spacing:.18em; text-transform:uppercase; font-size:.72rem; color:var(--ink-soft)}
+  h1{font-size:2rem; margin:.35em 0 .1em; font-weight:600; letter-spacing:.01em}
+  h1 .pl{display:block; font-size:1.15rem; font-style:italic; font-weight:400; color:var(--ink-soft); margin-top:.25em}
+  .sig{display:inline-block; margin-top:.7em; padding:.28em .9em; border:1.5px solid var(--accent);
+    color:var(--accent); border-radius:3px; transform:rotate(-1.2deg); font-size:.82rem; letter-spacing:.06em;
+    background:rgba(124,34,34,.04)}
+  .intro{max-width:760px; margin:14px auto 4px; font-size:.95rem; color:var(--ink-soft); text-align:center}
+  .intro a{color:var(--accent)}
+  .controls{
+    display:flex; flex-wrap:wrap; gap:10px; justify-content:center; align-items:end;
+    padding:16px 6px 6px;
+  }
+  .controls label{display:flex; flex-direction:column; gap:4px; font-size:.72rem;
+    letter-spacing:.12em; text-transform:uppercase; color:var(--ink-soft)}
+  input[type=search], select{
+    font:inherit; font-size:.95rem; color:var(--ink); background:var(--card);
+    border:1px solid var(--rule); border-radius:3px; padding:.45em .6em; min-height:42px;
+  }
+  input[type=search]{min-width:min(320px,78vw)}
+  .count-line{text-align:center; color:var(--ink-soft); font-style:italic; font-size:.9rem; padding:8px 0 2px}
+  .ledger{
+    background:var(--card); border:1px solid var(--rule); box-shadow:var(--shadow);
+    margin-top:10px; overflow-x:auto;
+  }
+  table{border-collapse:collapse; width:100%; font-size:.93rem}
+  thead th{
+    text-align:left; font-size:.7rem; letter-spacing:.12em; text-transform:uppercase;
+    color:var(--ink-soft); border-bottom:2px solid var(--rule-dark); padding:.6em .7em; white-space:nowrap;
+    background:linear-gradient(#f3ead2, #eee1c2);
+  }
+  tbody td{padding:.52em .7em; border-bottom:1px solid #e2d5b4; vertical-align:top}
+  tbody tr{cursor:pointer}
+  tbody tr:hover{background:#f3ead2}
+  td.nr{font-variant-numeric:tabular-nums; color:var(--ink-soft); white-space:nowrap}
+  td.name{font-weight:600}
+  td .sub{display:block; font-weight:400; font-size:.8rem; color:var(--ink-soft)}
+  td.date{white-space:nowrap; font-variant-numeric:tabular-nums}
+  .pager{display:flex; gap:6px; justify-content:center; align-items:center; flex-wrap:wrap; padding:16px 4px 4px}
+  .pager button{
+    font:inherit; font-size:.9rem; background:var(--card); color:var(--ink);
+    border:1px solid var(--rule); border-radius:3px; padding:.4em .8em; min-height:40px; cursor:pointer;
+  }
+  .pager button[disabled]{opacity:.4; cursor:default}
+  .pager button.current{background:var(--accent); border-color:var(--accent); color:#fdf6e3}
+  .pager .info{font-style:italic; color:var(--ink-soft); font-size:.88rem; margin:0 6px}
+  /* detail */
+  #detail{display:none}
+  #detail.open{display:block}
+  .record-card{
+    background:var(--card); border:1px solid var(--rule); box-shadow:var(--shadow);
+    padding:22px 22px 10px; margin-top:14px; position:relative;
+  }
+  .record-card::before{content:""; position:absolute; top:6px; bottom:6px; left:6px; right:6px;
+    border:1px solid #e0d0a8; pointer-events:none}
+  .record-card h2{margin:.1em 0 .2em; font-size:1.5rem}
+  .record-card h2 .nr{color:var(--accent); font-size:1rem; letter-spacing:.08em; display:block; text-transform:uppercase}
+  .backbtn{font:inherit; background:none; border:none; color:var(--accent); cursor:pointer; padding:6px 0; font-size:.95rem}
+  dl.fields{display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:4px 26px; margin:12px 0}
+  dl.fields div{border-bottom:1px dotted var(--rule); padding:5px 0}
+  dt{font-size:.68rem; letter-spacing:.13em; text-transform:uppercase; color:var(--ink-soft)}
+  dd{margin:.15em 0 0; font-size:1rem}
+  dd .aswritten{display:block; font-size:.82rem; font-style:italic; color:var(--ink-soft)}
+  .fates{width:100%; border-collapse:collapse; margin:8px 0 14px; font-size:.92rem}
+  .fates th,.fates td{border:1px solid #e0d0a8; padding:.45em .6em; text-align:left; vertical-align:top}
+  .fates th{background:#f3ead2; font-size:.7rem; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-soft)}
+  .status-notfound{color:var(--ink-soft); font-style:italic}
+  .status-found{color:var(--ink)}
+  .status-ambiguous{color:var(--accent-soft)}
+  details{margin:10px 0 16px}
+  summary{cursor:pointer; color:var(--accent); font-size:.92rem}
+  .transcription{font-style:italic; color:var(--ink-soft); font-size:.92rem; padding:10px 14px;
+    border-left:3px solid var(--rule); background:#faf3e0; margin-top:8px; white-space:pre-wrap}
+  footer{border-top:4px double var(--rule-dark); margin-top:30px; padding-top:14px;
+    font-size:.85rem; color:var(--ink-soft); text-align:center}
+  footer a{color:var(--accent)}
+  .downloads a{margin:0 .5em}
+  @media (max-width:640px){
+    h1{font-size:1.55rem}
+    thead th:nth-child(7), tbody td:nth-child(7){display:none} /* witnesses fold into detail on small screens */
+    thead th:nth-child(6), tbody td:nth-child(6){display:none} /* time folds too */
+    table{font-size:.88rem}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="archive-line">Archiwum Państwowe w Lublinie &middot; State Archive in Lublin</div>
+    <h1>Opole Death Register, 1942
+      <span class="pl">Księga zgonów &mdash; Akta stanu cywilnego Okręgu Bożniczego w Opolu</span>
+    </h1>
+    <div class="sig">Signature 35 / 1763 / 0 / 1.3 / 28</div>
+    <p class="intro">
+      A searchable transcription of the 1942 death register of the Jewish community of Opole
+      (Opole Lubelskie), Poland. Most of those recorded here were Jews deported from Vienna in
+      1941. Each entry gives the name, age, recorded birthplace, date and time of death, and
+      witnesses exactly as the register records them, with the Hebrew date of death and the
+      yahrtzeit, and what DÖW, Yad Vashem, and the US Holocaust Memorial Museum record as
+      the person's fate.
+      Original scans: <a href="https://www.szukajwarchiwach.gov.pl/jednostka/-/jednostka/39731697" target="_blank" rel="noopener">Szukaj w Archiwach, unit 39731697</a>.
+    </p>
+  </header>
+
+  <div class="controls">
+    <label>Search
+      <input type="search" id="q" placeholder="Name, birthplace, witness&hellip;" autocomplete="off">
+    </label>
+    <label>Birthplace
+      <select id="fBirth"><option value="">All birthplaces</option></select>
+    </label>
+    <label>Yahrtzeit (Hebrew month)
+      <select id="fHeb">
+        <option value="">All months</option>
+        <option>Nisan</option><option>Iyar</option><option>Sivan</option><option>Tammuz</option>
+        <option>Av</option><option>Elul</option><option>Tishrei</option><option>Cheshvan</option>
+        <option>Kislev</option><option>Tevet</option><option>Shevat</option><option>Adar</option><option>Adar II</option>
+      </select>
+    </label>
+    <label>Sort
+      <select id="fSort">
+        <option value="act">Act number</option>
+        <option value="date">Date of death</option>
+        <option value="name">Name (A&ndash;Z)</option>
+      </select>
+    </label>
+  </div>
+  <div class="count-line" id="countLine">Loading the register&hellip;</div>
+
+  <div id="listView">
+    <div class="ledger">
+      <table aria-label="Death register entries">
+        <thead><tr>
+          <th>Nr</th><th>Name</th><th>Age</th><th>Birthplace (recorded)</th>
+          <th>Died</th><th>Time</th><th>Witnesses</th><th>Yahrtzeit</th>
+        </tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+    <div class="pager" id="pager"></div>
+  </div>
+
+  <div id="detail"></div>
+
+  <footer>
+    <p class="downloads">Download the data:
+      <a href="data/deaths.csv" download>CSV</a>&middot;<a href="data/deaths.json" download>JSON</a>&middot;<a href="data/deaths.sqlite" download>SQLite</a>
+    </p>
+    <p>Transcribed from the register scans published by the Archiwum Państwowe w Lublinie via
+    Szukaj w Archiwach. Birthplaces, ages, and causes are as recorded in 1942 and may differ
+    from other sources; the register itself is the authority for what it says. Fate entries
+    quote each database's own wording and link to its record.</p>
+    <p>Compiled by Moshe Berman &middot; <a href="https://github.com/MosheBerman/opole-1942-death-register" target="_blank" rel="noopener">Source and method on GitHub</a></p>
+  </footer>
+</div>
+
+<script>
+const PAGE = 25;
+let DATA = [], filtered = [], page = 1;
+
+const $ = s => document.querySelector(s);
+const esc = s => (s ?? "").toString().replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fmtDate = iso => {
+  if(!iso) return "";
+  const [y,m,d] = iso.split("-").map(Number);
+  const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  return `${d} ${months[m-1]} ${y}`;
+};
+const surnameKey = name => {
+  if(!name) return "";
+  const parts = name.replace(/\s+vel\s+/i, " vel ").split(" ");
+  return name.toLowerCase();
+};
+const fold = s => (s || "").toLowerCase().replace(/ł/g, "l").replace(/đ/g, "d")
+  .normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+function applyFilters(){
+  const q = fold($("#q").value.trim());
+  const fb = $("#fBirth").value, fh = $("#fHeb").value, sort = $("#fSort").value;
+  filtered = DATA.filter(r => {
+    if(fb && r.birthplace !== fb) return false;
+    if(fh && !(r.yahrtzeit || "").endsWith(fh) && !(r.yahrtzeit || "").includes(" " + fh)) return false;
+    if(q){
+      const hay = fold([r.name, r.name_in_index, r.birthplace, r.witnesses, r.occupation, r.cause_of_death]
+        .filter(Boolean).join(" "));
+      if(!q.split(/\s+/).every(tok => hay.includes(tok))) return false;
+    }
+    return true;
+  });
+  if(sort === "date") filtered.sort((a,b) => (a.death_date||"").localeCompare(b.death_date||"") || a.act_no - b.act_no);
+  else if(sort === "name") filtered.sort((a,b) => surnameKey(a.name).localeCompare(surnameKey(b.name)));
+  else filtered.sort((a,b) => a.act_no - b.act_no);
+  page = 1;
+  render();
+}
+
+function render(){
+  const total = filtered.length;
+  const pages = Math.max(1, Math.ceil(total / PAGE));
+  if(page > pages) page = pages;
+  const start = (page - 1) * PAGE;
+  const slice = filtered.slice(start, start + PAGE);
+  $("#countLine").textContent = total === DATA.length
+    ? `${total} entries in the register`
+    : `${total} of ${DATA.length} entries match`;
+  $("#rows").innerHTML = slice.map(r => `
+    <tr data-act="${r.act_no}" tabindex="0" role="button" aria-label="Entry ${r.act_no}, ${esc(r.name)}">
+      <td class="nr">${r.act_no}</td>
+      <td class="name">${esc(r.name)}${r.name_in_index && r.name_in_index !== r.name ? `<span class="sub">index: ${esc(r.name_in_index)}</span>` : ""}</td>
+      <td>${r.age ?? ""}${r.age_unit && r.age_unit !== "years" ? " " + esc(r.age_unit) : ""}</td>
+      <td>${esc(r.birthplace || "")}</td>
+      <td class="date">${fmtDate(r.death_date)}</td>
+      <td>${esc(r.death_time || "")}</td>
+      <td>${esc(r.witnesses || "")}</td>
+      <td>${esc(r.yahrtzeit || "")}</td>
+    </tr>`).join("");
+  document.querySelectorAll("#rows tr").forEach(tr => {
+    tr.addEventListener("click", () => openDetail(Number(tr.dataset.act)));
+    tr.addEventListener("keydown", e => { if(e.key === "Enter") openDetail(Number(tr.dataset.act)); });
+  });
+  // pager
+  const p = $("#pager");
+  let btns = "";
+  btns += `<button ${page <= 1 ? "disabled" : ""} data-pg="prev">&larr; Previous</button>`;
+  const windowPages = [];
+  for(let i = 1; i <= pages; i++){
+    if(i === 1 || i === pages || Math.abs(i - page) <= 2) windowPages.push(i);
+    else if(windowPages[windowPages.length - 1] !== "…") windowPages.push("…");
+  }
+  for(const wp of windowPages){
+    btns += wp === "…"
+      ? `<span class="info">&hellip;</span>`
+      : `<button data-pg="${wp}" class="${wp === page ? "current" : ""}">${wp}</button>`;
+  }
+  btns += `<button ${page >= pages ? "disabled" : ""} data-pg="next">Next &rarr;</button>`;
+  btns += `<span class="info">Page ${page} of ${pages}</span>`;
+  p.innerHTML = btns;
+  p.querySelectorAll("button[data-pg]").forEach(b => b.addEventListener("click", () => {
+    const v = b.dataset.pg;
+    page = v === "prev" ? page - 1 : v === "next" ? page + 1 : Number(v);
+    render();
+    window.scrollTo({top: 0, behavior: "smooth"});
+  }));
+}
+
+function fateCell(label, status, fate, url){
+  let body;
+  if(status === "found"){
+    body = `<span class="status-found">${esc(fate || "Record found")}</span>`;
+    if(url) body += `<br><a href="${esc(url)}" target="_blank" rel="noopener">View record</a>`;
+  } else if(status === "ambiguous"){
+    body = `<span class="status-ambiguous">Possible match, not confirmed${fate ? " — " + esc(fate) : ""}</span>`;
+    if(url) body += `<br><a href="${esc(url)}" target="_blank" rel="noopener">View record</a>`;
+  } else if(status === "not_checked"){
+    body = `<span class="status-notfound">Not yet checked</span>`;
+  } else {
+    body = `<span class="status-notfound">Not found</span>`;
+  }
+  return `<tr><th>${label}</th><td>${body}</td></tr>`;
+}
+
+function openDetail(actNo){
+  const r = DATA.find(x => x.act_no === actNo);
+  if(!r) return;
+  const d = $("#detail");
+  const field = (label, value, asWritten) => value ? `
+    <div><dt>${label}</dt><dd>${esc(value)}${asWritten ? `<span class="aswritten">as written: ${esc(asWritten)}</span>` : ""}</dd></div>` : "";
+  d.innerHTML = `
+    <button class="backbtn" id="backBtn">&larr; Back to the register</button>
+    <div class="record-card">
+      <h2><span class="nr">Death act Nr ${r.act_no} &middot; 1942</span>${esc(r.name)}</h2>
+      <dl class="fields">
+        ${field("Age", r.age != null ? r.age + (r.age_unit && r.age_unit !== "years" ? " " + r.age_unit : "") : null, r.age_as_written)}
+        ${field("Birthplace (recorded)", r.birthplace || "Not recorded", r.birthplace_as_written)}
+        ${field("Date of death", fmtDate(r.death_date))}
+        ${field("Time of death", r.death_time || "Not recorded", r.death_time_as_written)}
+        ${field("Hebrew date of death", r.hebrew_date)}
+        ${field("Yahrtzeit", r.yahrtzeit)}
+        ${field("Witnesses", r.witnesses)}
+        ${field("Occupation (recorded)", r.occupation)}
+        ${field("Marital status", r.marital_status)}
+        ${field("Cause of death (recorded)", r.cause_of_death)}
+        ${field("Registered", fmtDate(r.registration_date))}
+        ${field("Notes", [r.notes, r.evening_death ? "Died in the evening; by the Hebrew calendar the day may already have turned at sunset." : null].filter(Boolean).join(" ") || null)}
+        ${field("Register scan", "Scan " + r.scan + " of 171")}
+      </dl>
+      <h3 style="margin:.6em 0 .2em">What the other databases record</h3>
+      <table class="fates">
+        ${fateCell("DÖW (Vienna)", r.dow_status, r.dow_fate, r.dow_url)}
+        ${fateCell("Yad Vashem", r.yadvashem_status, r.yadvashem_fate, r.yadvashem_url)}
+        ${fateCell("USHMM", r.ushmm_status, r.ushmm_fate, r.ushmm_url)}
+      </table>
+      <p style="font-size:.9rem"><a href="https://www.szukajwarchiwach.gov.pl/jednostka/-/jednostka/39731697" target="_blank" rel="noopener">Open the original register at Szukaj w Archiwach</a> (scan ${r.scan})</p>
+      ${r.transcription_pl ? `<details><summary>Full transcription of the act (Polish)</summary><div class="transcription">${esc(r.transcription_pl)}</div></details>` : ""}
+    </div>`;
+  d.classList.add("open");
+  $("#listView").style.display = "none";
+  $(".controls").style.display = "none";
+  $("#countLine").style.display = "none";
+  $("#backBtn").addEventListener("click", closeDetail);
+  history.replaceState(null, "", "#act-" + actNo);
+  window.scrollTo({top: 0});
+}
+
+function closeDetail(){
+  $("#detail").classList.remove("open");
+  $("#detail").innerHTML = "";
+  $("#listView").style.display = "";
+  $(".controls").style.display = "";
+  $("#countLine").style.display = "";
+  history.replaceState(null, "", location.pathname);
+}
+
+async function init(){
+  try{
+    const res = await fetch("data/deaths.json");
+    DATA = await res.json();
+  }catch(e){
+    $("#countLine").textContent = "The register data could not be loaded.";
+    return;
+  }
+  const bps = [...new Set(DATA.map(r => r.birthplace).filter(Boolean))].sort();
+  $("#fBirth").innerHTML = `<option value="">All birthplaces</option>` + bps.map(b => `<option>${esc(b)}</option>`).join("");
+  ["q","fBirth","fHeb","fSort"].forEach(id => $("#" + id).addEventListener("input", applyFilters));
+  applyFilters();
+  const m = location.hash.match(/act-(\d+)/);
+  if(m) openDetail(Number(m[1]));
+}
+init();
+</script>
+</body>
+</html>
