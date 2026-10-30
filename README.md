@@ -55,6 +55,20 @@ original can be checked.
    recorded age; DÖW matches were cross-checked against USHMM, whose
    "Österreichische Opfer des Holocaust" records carry the DÖW id as
    "Other ID".
+7. A ±2-year reconciliation pass then re-examined the ambiguous results:
+   where exactly one candidate's birth year falls within two years of the
+   register-implied year (and the given name is compatible), the result is
+   shown as a **probable match**, with the basis stated — never silently
+   as a confirmed match. The same review demoted strict "found" results
+   whose candidate proved to be a different person (same surname and age,
+   incompatible given name, e.g. a spouse); those now read as ambiguous
+   with the near-miss record named.
+8. Birthplaces are shown as recorded; a standardized form (`birthplace_std`)
+   groups spelling and language variants of the same place for filtering.
+   Only confident identifications are grouped (e.g. Bardejov / Bardejów /
+   Bardeov / Bardiów; Wiedeń = Vienna; Presburg / Pressburg = Bratislava).
+   Doubtful cases (bare "Nowe Miasto", "Józefów", "Berdejsz") are left
+   unmerged.
 
 Birthplaces, ages, and causes are reproduced **as recorded in 1942** — the
 register sometimes differs from other sources (it records Josef Bermann as

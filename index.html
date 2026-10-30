@@ -85,8 +85,19 @@
   .fates{width:100%; border-collapse:collapse; margin:8px 0 14px; font-size:.92rem}
   .fates th,.fates td{border:1px solid #e0d0a8; padding:.45em .6em; text-align:left; vertical-align:top}
   .fates th{background:#f3ead2; font-size:.7rem; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-soft)}
+  .viewtabs{display:flex; gap:.5em; margin:0 0 1em}
+  .viewtabs button{font:inherit; padding:.35em 1em; border:1px solid var(--rule); background:transparent; color:var(--ink-soft); cursor:pointer; border-radius:2px}
+  .viewtabs button.current{background:var(--accent); border-color:var(--accent); color:#fff}
+  .stats-grid{display:grid; grid-template-columns:1fr 1fr; gap:1.2em 2em}
+  @media (max-width:760px){ .stats-grid{grid-template-columns:1fr} }
+  .stat-box h3{margin:.2em 0 .5em; font-size:1rem; letter-spacing:.04em}
+  .stat-box svg{width:100%; height:auto; display:block}
+  .stat-box .cap{font-size:.85rem; color:var(--ink-soft); margin-top:.3em}
+  .stat-table{width:100%; border-collapse:collapse; font-size:.92rem}
+  .stat-table td,.stat-table th{border-bottom:1px solid #e0d0a8; padding:.3em .4em; text-align:left}
   .status-notfound{color:var(--ink-soft); font-style:italic}
   .status-found{color:var(--ink)}
+  .status-probable{color:var(--ink)}
   .status-ambiguous{color:var(--accent-soft)}
   details{margin:10px 0 16px}
   summary{cursor:pointer; color:var(--accent); font-size:.92rem}
@@ -145,8 +156,31 @@
         <option value="name">Name (A&ndash;Z)</option>
       </select>
     </label>
+    <label>Per page
+      <select id="fPage">
+        <option value="25">25</option>
+        <option value="50">50</option>
+        <option value="100">100</option>
+        <option value="all">All</option>
+      </select>
+    </label>
+  </div>
+  <div class="viewtabs" id="viewTabs">
+    <button id="tabList" class="current">Register</button>
+    <button id="tabStats">Statistics</button>
   </div>
   <div class="count-line" id="countLine">Loading the register&hellip;</div>
+
+  <div id="statsView" style="display:none">
+    <div class="stats-grid">
+      <div class="stat-box"><h3>Deaths by month, 1942</h3><div id="chartMonths"></div></div>
+      <div class="stat-box"><h3>Deaths by age</h3><div id="chartAges"></div><div class="cap" id="ageNote"></div></div>
+      <div class="stat-box"><h3>Men and women</h3><div id="chartGender"></div><div class="cap">Gender as stated grammatically in each act (umarł / umarła).</div></div>
+      <div class="stat-box"><h3>Recorded cause of death (Polish, as written)</h3><div id="chartCauses"></div><div class="cap" id="causeNote"></div></div>
+      <div class="stat-box"><h3>Witness pairs</h3><div id="witnessStats"></div><div class="cap">The two witnesses (declarants) served in stretches; a new pair marks a changeover. Pairs below are ordered by first appearance.</div></div>
+      <div class="stat-box"><h3>Most common birthplaces (standardized)</h3><div id="placeStats"></div><div class="cap">Spelling and language variants of one place are grouped; the register's own spelling is kept on each entry.</div></div>
+    </div>
+  </div>
 
   <div id="listView">
     <div class="ledger">
@@ -170,14 +204,21 @@
     <p>Transcribed from the register scans published by the Archiwum Państwowe w Lublinie via
     Szukaj w Archiwach. Birthplaces, ages, and causes are as recorded in 1942 and may differ
     from other sources; the register itself is the authority for what it says. Fate entries
-    quote each database's own wording and link to its record.</p>
+    quote each database's own wording and link to its record. A <em>probable match</em> is a
+    record whose name matches but whose stated birth year falls within two years of the age
+    implied by the register; it is marked, never merged silently. Birthplaces are shown as
+    recorded; the filter groups spelling and language variants of the same place under a
+    standardized name.</p>
     <p>Compiled by Moshe Berman &middot; <a href="https://github.com/MosheBerman/opole-1942-death-register" target="_blank" rel="noopener">Source and method on GitHub</a></p>
   </footer>
 </div>
 
 <script>
-const PAGE = 25;
 let DATA = [], filtered = [], page = 1;
+const pageSize = () => {
+  const v = $("#fPage").value;
+  return v === "all" ? Math.max(1, filtered.length) : Number(v);
+};
 
 const $ = s => document.querySelector(s);
 const esc = s => (s ?? "").toString().replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -199,10 +240,10 @@ function applyFilters(){
   const q = fold($("#q").value.trim());
   const fb = $("#fBirth").value, fh = $("#fHeb").value, sort = $("#fSort").value;
   filtered = DATA.filter(r => {
-    if(fb && r.birthplace !== fb) return false;
+    if(fb && (r.birthplace_std || r.birthplace) !== fb) return false;
     if(fh && !(r.yahrtzeit || "").endsWith(fh) && !(r.yahrtzeit || "").includes(" " + fh)) return false;
     if(q){
-      const hay = fold([r.name, r.name_in_index, r.birthplace, r.witnesses, r.occupation, r.cause_of_death]
+      const hay = fold([r.name, r.name_in_index, r.birthplace, r.birthplace_std, r.witnesses, r.occupation, r.cause_of_death]
         .filter(Boolean).join(" "));
       if(!q.split(/\s+/).every(tok => hay.includes(tok))) return false;
     }
@@ -217,6 +258,7 @@ function applyFilters(){
 
 function render(){
   const total = filtered.length;
+  const PAGE = pageSize();
   const pages = Math.max(1, Math.ceil(total / PAGE));
   if(page > pages) page = pages;
   const start = (page - 1) * PAGE;
@@ -269,6 +311,9 @@ function fateCell(label, status, fate, url){
   if(status === "found"){
     body = `<span class="status-found">${esc(fate || "Record found")}</span>`;
     if(url) body += `<br><a href="${esc(url)}" target="_blank" rel="noopener">View record</a>`;
+  } else if(status === "probable"){
+    body = `<span class="status-probable"><strong>Probable match</strong> &mdash; ${esc(fate || "Record found")}</span>`;
+    if(url) body += `<br><a href="${esc(url)}" target="_blank" rel="noopener">View record</a>`;
   } else if(status === "ambiguous"){
     body = `<span class="status-ambiguous">Possible match, not confirmed${fate ? " — " + esc(fate) : ""}</span>`;
     if(url) body += `<br><a href="${esc(url)}" target="_blank" rel="noopener">View record</a>`;
@@ -293,6 +338,7 @@ function openDetail(actNo){
       <dl class="fields">
         ${field("Age", r.age != null ? r.age + (r.age_unit && r.age_unit !== "years" ? " " + r.age_unit : "") : null, r.age_as_written)}
         ${field("Birthplace (recorded)", r.birthplace || "Not recorded", r.birthplace_as_written)}
+        ${r.birthplace_std && r.birthplace_std !== r.birthplace ? field("Place (standardized)", r.birthplace_std) : ""}
         ${field("Date of death", fmtDate(r.death_date))}
         ${field("Time of death", r.death_time || "Not recorded", r.death_time_as_written)}
         ${field("Hebrew date of death", r.hebrew_date)}
@@ -305,8 +351,9 @@ function openDetail(actNo){
         ${field("Notes", [r.notes, r.evening_death ? "Died in the evening; by the Hebrew calendar the day may already have turned at sunset." : null].filter(Boolean).join(" ") || null)}
         ${field("Register scan", "Scan " + r.scan + " of 171")}
       </dl>
-      <h3 style="margin:.6em 0 .2em">What the other databases record</h3>
+      <h3 style="margin:.6em 0 .2em">Fate, as recorded</h3>
       <table class="fates">
+        <tr><th>This register</th><td><span class="status-found">Died in Opole on ${fmtDate(r.death_date)}${r.death_time ? " at " + esc(r.death_time) : ""}${r.cause_of_death ? "; recorded cause: " + esc(r.cause_of_death) : ""} (act Nr ${r.act_no}, scan ${r.scan})</span></td></tr>
         ${fateCell("DÖW (Vienna)", r.dow_status, r.dow_fate, r.dow_url)}
         ${fateCell("Yad Vashem", r.yadvashem_status, r.yadvashem_fate, r.yadvashem_url)}
         ${fateCell("USHMM", r.ushmm_status, r.ushmm_fate, r.ushmm_url)}
@@ -316,6 +363,8 @@ function openDetail(actNo){
     </div>`;
   d.classList.add("open");
   $("#listView").style.display = "none";
+  $("#statsView").style.display = "none";
+  $("#viewTabs").style.display = "none";
   $(".controls").style.display = "none";
   $("#countLine").style.display = "none";
   $("#backBtn").addEventListener("click", closeDetail);
@@ -326,10 +375,126 @@ function openDetail(actNo){
 function closeDetail(){
   $("#detail").classList.remove("open");
   $("#detail").innerHTML = "";
+  $("#viewTabs").style.display = "";
+  showList();
+  history.replaceState(null, "", location.pathname);
+}
+
+function barChart(items){
+  const w = 520, h = 190, padB = 34, padT = 16, padX = 8;
+  const max = Math.max(...items.map(i => i.value), 1);
+  const bw = (w - 2 * padX) / items.length;
+  let s = "";
+  items.forEach((it, i) => {
+    const bh = (h - padB - padT) * it.value / max;
+    const x = padX + i * bw, y = h - padB - bh;
+    s += `<rect x="${(x + 2).toFixed(1)}" y="${y.toFixed(1)}" width="${(bw - 4).toFixed(1)}" height="${bh.toFixed(1)}" fill="#a5502e"/>`
+      + `<text x="${(x + bw / 2).toFixed(1)}" y="${(y - 4).toFixed(1)}" text-anchor="middle" font-size="11" fill="#2e2118">${it.value}</text>`
+      + `<text x="${(x + bw / 2).toFixed(1)}" y="${h - padB + 16}" text-anchor="middle" font-size="11" fill="#5a4632">${esc(it.label)}</text>`;
+  });
+  return `<svg viewBox="0 0 ${w} ${h}" role="img">${s}</svg>`;
+}
+
+function hbarChart(items, labelW){
+  const w = 520, lh = 23;
+  const max = Math.max(...items.map(i => i.value), 1);
+  const h = items.length * lh + 6;
+  let s = "";
+  items.forEach((it, i) => {
+    const y = i * lh + 3, bw = Math.max(2, (w - labelW - 46) * it.value / max);
+    s += `<text x="0" y="${y + 13}" font-size="12" fill="#2e2118">${esc(it.label)}</text>`
+      + `<rect x="${labelW}" y="${y + 2}" width="${bw.toFixed(1)}" height="13" fill="#a5502e"/>`
+      + `<text x="${(labelW + bw + 6).toFixed(1)}" y="${y + 13}" font-size="12" fill="#2e2118">${it.value}</text>`;
+  });
+  return `<svg viewBox="0 0 ${w} ${h}" role="img">${s}</svg>`;
+}
+
+function buildStats(){
+  const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  const byMonth = months.map(m => ({label: m, value: 0}));
+  DATA.forEach(r => { if(r.death_date) byMonth[Number(r.death_date.slice(5, 7)) - 1].value++; });
+  $("#chartMonths").innerHTML = barChart(byMonth);
+
+  const bucketNames = ["<1","1\u20134","5\u20139","10\u201319","20\u201329","30\u201339","40\u201349","50\u201359","60\u201369","70\u201379","80\u201389","90+"];
+  const buckets = bucketNames.map(b => ({label: b, value: 0}));
+  let noAge = 0;
+  DATA.forEach(r => {
+    if(r.age == null){ noAge++; return; }
+    const yrs = r.age_unit === "months" ? r.age / 12 : r.age_unit === "weeks" ? r.age / 52 : r.age;
+    const idx = yrs < 1 ? 0 : yrs < 5 ? 1 : yrs < 10 ? 2 : Math.min(11, 3 + Math.floor((yrs - 10) / 10));
+    buckets[idx].value++;
+  });
+  $("#chartAges").innerHTML = barChart(buckets);
+  $("#ageNote").textContent = noAge ? `Age not recorded for ${noAge} ${noAge === 1 ? "entry" : "entries"}.` : "";
+
+  const gm = DATA.filter(r => r.gender === "male").length;
+  const gf = DATA.filter(r => r.gender === "female").length;
+  $("#chartGender").innerHTML = hbarChart([{label: "Men", value: gm}, {label: "Women", value: gf}], 70);
+
+  const causes = {};
+  let noCause = 0;
+  DATA.forEach(r => {
+    const c = (r.cause_of_death || "").trim().replace(/[.\s]+$/, "");
+    if(!c){ noCause++; return; }
+    let k = fold(c);
+    if(k === "wiad starczy") k = "uwiad starczy"; // same wording, initial letter dropped in some acts
+    causes[k] = causes[k] || {label: k === "uwiad starczy" ? "uwiąd starczy" : c, value: 0};
+    causes[k].value++;
+  });
+  const topCauses = Object.values(causes).sort((a, b) => b.value - a.value).slice(0, 12);
+  $("#chartCauses").innerHTML = hbarChart(topCauses, 205);
+  $("#causeNote").textContent = `Grouped by the recorded wording (${Object.keys(causes).length} distinct forms). Cause not recorded for ${noCause} entries. The acts name the certifying feldsher Dibik.`;
+
+  const pairs = new Map();
+  DATA.forEach(r => {
+    if(!r.witness_1 || !r.witness_2) return;
+    // Group by the two people, ignoring which is named first and the name
+    // order inside each name (the acts write them both ways). Spelling
+    // variants are NOT merged, so garbled later-act spellings stay separate.
+    const keyOf = w => fold(w).split(/\s+/).sort().join(" ");
+    const k = [keyOf(r.witness_1), keyOf(r.witness_2)].sort().join(" + ");
+    if(!pairs.has(k)) pairs.set(k, {acts: [], labels: {}});
+    const e = pairs.get(k);
+    e.acts.push(r.act_no);
+    const lbl = r.witness_1 + " + " + r.witness_2;
+    e.labels[lbl] = (e.labels[lbl] || 0) + 1;
+  });
+  const pairRows = [...pairs.values()].map(e => ({
+    acts: e.acts,
+    label: Object.entries(e.labels).sort((a, b) => b[1] - a[1])[0][0]
+  })).sort((a, b) => a.acts[0] - b.acts[0]);
+  const shown = pairRows.slice(0, 10);
+  const restActs = pairRows.slice(10).reduce((s, e) => s + e.acts.length, 0);
+  $("#witnessStats").innerHTML = `<table class="stat-table"><tr><th>Witness pair</th><th>Acts</th><th>Span</th></tr>`
+    + shown.map(e => `<tr><td>${esc(e.label)}</td><td>${e.acts.length}</td><td>${Math.min(...e.acts)}\u2013${Math.max(...e.acts)}</td></tr>`).join("")
+    + (restActs ? `<tr><td><em>${pairRows.length - 10} further pairs (incl. spelling variants)</em></td><td>${restActs}</td><td></td></tr>` : "")
+    + `</table>`;
+
+  const places = {};
+  DATA.forEach(r => { const b = r.birthplace_std || r.birthplace; if(b) places[b] = (places[b] || 0) + 1; });
+  const topPlaces = Object.entries(places).sort((a, b) => b[1] - a[1]).slice(0, 10);
+  $("#placeStats").innerHTML = hbarChart(topPlaces.map(([label, value]) => ({label, value})), 170);
+}
+
+function showStats(){
+  $("#statsView").style.display = "";
+  $("#listView").style.display = "none";
+  $(".controls").style.display = "none";
+  $("#countLine").style.display = "none";
+  $("#tabStats").classList.add("current");
+  $("#tabList").classList.remove("current");
+  buildStats();
+  window.scrollTo({top: 0});
+}
+
+function showList(){
+  $("#statsView").style.display = "none";
   $("#listView").style.display = "";
   $(".controls").style.display = "";
   $("#countLine").style.display = "";
-  history.replaceState(null, "", location.pathname);
+  $("#tabList").classList.add("current");
+  $("#tabStats").classList.remove("current");
+  window.scrollTo({top: 0});
 }
 
 async function init(){
@@ -340,9 +505,13 @@ async function init(){
     $("#countLine").textContent = "The register data could not be loaded.";
     return;
   }
-  const bps = [...new Set(DATA.map(r => r.birthplace).filter(Boolean))].sort();
-  $("#fBirth").innerHTML = `<option value="">All birthplaces</option>` + bps.map(b => `<option>${esc(b)}</option>`).join("");
-  ["q","fBirth","fHeb","fSort"].forEach(id => $("#" + id).addEventListener("input", applyFilters));
+  const bpCounts = {};
+  DATA.forEach(r => { const b = r.birthplace_std || r.birthplace; if(b) bpCounts[b] = (bpCounts[b] || 0) + 1; });
+  const bps = Object.keys(bpCounts).sort();
+  $("#fBirth").innerHTML = `<option value="">All birthplaces</option>` + bps.map(b => `<option value="${esc(b)}">${esc(b)} (${bpCounts[b]})</option>`).join("");
+  ["q","fBirth","fHeb","fSort","fPage"].forEach(id => $("#" + id).addEventListener("input", applyFilters));
+  $("#tabStats").addEventListener("click", showStats);
+  $("#tabList").addEventListener("click", showList);
   applyFilters();
   const m = location.hash.match(/act-(\d+)/);
   if(m) openDetail(Number(m[1]));
