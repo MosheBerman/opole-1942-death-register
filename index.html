@@ -193,6 +193,7 @@
       <div class="stat-box"><h3 data-i18n="s_age_time">Age groups over time</h3><div id="chartAgeTime"></div><div class="legend" id="legendAge"></div></div>
       <div class="stat-box"><h3 data-i18n="s_cause_time">Cause of death over time</h3><div id="chartCauseTime"></div><div class="legend" id="legendCause"></div></div>
       <div class="stat-box"><h3 data-i18n="s_age_cause">Age groups by cause of death</h3><div id="chartAgeCause"></div><div class="legend" id="legendAge2"></div></div>
+      <div class="stat-box" style="grid-column:1/-1"><h3 data-i18n="s_bubble">Month × cause of death (bubbles)</h3><div id="chartBubble"></div><div class="legend" id="legendBubble"></div><div class="cap" data-i18n="s_bubble_cap">One bubble per gender in each month and cause cell. Bubble size = deaths; colour = gender; the number inside a bubble is the median age of that group. The eight most common causes are shown, grouped as elsewhere on this page; the rest fall under Other.</div></div>
       <div class="stat-box"><h3 data-i18n="s_witness">Witness pairs</h3><div id="witnessStats"></div><div class="cap" data-i18n="s_witness_cap">The two witnesses (declarants) served in stretches; a new pair marks a changeover. Pairs are ordered by first appearance; witness names are standardized, spelling variants grouped.</div></div>
       <div class="stat-box"><h3 data-i18n="s_places">Most common birthplaces (standardized)</h3><div id="placeStats"></div><div class="cap" data-i18n="s_places_cap">Spelling and language variants of one place are grouped; the register's own spelling is kept on each entry.</div></div>
       <div class="stat-box" style="grid-column:1/-1"><h3 data-i18n="s_glossary">Glossary of recorded causes of death</h3><div class="glossary" id="glossary"></div></div>
@@ -261,6 +262,8 @@ en: { tab_register:"Register", tab_stats:"Statistics", title:"Opole 1942 Death R
   s_places:"Most common birthplaces (standardized)",
   s_places_cap:"Spelling and language variants of one place are grouped; the register's own spelling is kept on each entry.",
   s_glossary:"Glossary of recorded causes of death",
+  s_bubble:"Month × cause of death (bubbles)",
+  s_bubble_cap:"One bubble per gender in each month and cause cell. Bubble size = deaths; colour = gender; the number inside a bubble is the median age of that group. The eight most common causes are shown, grouped as elsewhere on this page; the rest fall under Other.",
   age_note_pre:"Age not recorded for", age_note_suf:"entries.",
   cause_note_pre:"Grouped by the recorded wording, near-identical forms merged", cause_note_mid:"distinct forms", cause_note_suf:"Cause not recorded for",
   other:"Other", witness_pair:"Witness pair", acts:"Acts", span:"Span", further_pairs:"further pairs",
@@ -299,6 +302,8 @@ de: { tab_register:"Register", tab_stats:"Statistik", title:"Sterberegister Opol
   s_places:"Häufigste Geburtsorte (standardisiert)",
   s_places_cap:"Schreib- und Sprachvarianten eines Orts sind zusammengefasst; die Schreibweise des Registers bleibt bei jedem Eintrag erhalten.",
   s_glossary:"Glossar der verzeichneten Todesursachen",
+  s_bubble:"Monat × Todesursache (Blasen)",
+  s_bubble_cap:"Eine Blase pro Geschlecht in jeder Monats- und Ursachenzelle. Blasengröße = Sterbefälle; Farbe = Geschlecht; die Zahl in der Blase ist das Medianalter dieser Gruppe. Gezeigt werden die acht häufigsten Ursachen, gruppiert wie auf dieser Seite; der Rest fällt unter Andere.",
   age_note_pre:"Alter nicht verzeichnet bei", age_note_suf:"Einträgen.",
   cause_note_pre:"Gruppiert nach der verzeichneten Formulierung, nahezu identische Formen zusammengefasst", cause_note_mid:"verschiedene Formen", cause_note_suf:"Ursache nicht verzeichnet bei",
   other:"Andere", witness_pair:"Zeugenpaar", acts:"Akte", span:"Zeitraum", further_pairs:"weitere Paare",
@@ -337,6 +342,8 @@ pl: { tab_register:"Rejestr", tab_stats:"Statystyki", title:"Księga zgonów Opo
   s_places:"Najczęstsze miejsca urodzenia (ujednolicone)",
   s_places_cap:"Warianty pisowni i języka tej samej miejscowości są połączone; pisownia księgi pozostaje przy każdym wpisie.",
   s_glossary:"Słowniczek odnotowanych przyczyn zgonu",
+  s_bubble:"Miesiąc × przyczyna zgonu (bąble)",
+  s_bubble_cap:"Jeden bąbel na płeć w każdej komórce miesiąca i przyczyny. Rozmiar bąbla = liczba zgonów; kolor = płeć; liczba w bąblu to mediana wieku tej grupy. Pokazano osiem najczęstszych przyczyn, pogrupowanych jak na tej stronie; reszta trafia do Inne.",
   age_note_pre:"Wieku nie odnotowano w", age_note_suf:"wpisach.",
   cause_note_pre:"Grupowanie według odnotowanego brzmienia, niemal identyczne formy połączono", cause_note_mid:"różnych form", cause_note_suf:"Przyczyny nie odnotowano w",
   other:"Inne", witness_pair:"Para świadków", acts:"Akty", span:"Zakres", further_pairs:"dalszych par",
@@ -746,6 +753,49 @@ function buildStats(){
   const acSeries = AGE_GROUPS.map((g, i) => ({label: g.label, color: PALETTE[i],
     values: top6.map(k => DATA.filter(r => causeKey(r) === k && ageGroupOf(r) === g.id).length)}));
   $("#chartAgeCause").innerHTML = stackedH(top6.map(causeName), acSeries, 215);
+
+  // Bubble graph: x = month, y = cause; one bubble per gender per cell,
+  // size = deaths, number inside = median age of the group.
+  {
+    const top8 = Object.entries(causes).sort((a, b) => b[1] - a[1]).slice(0, 8).map(e => e[0]);
+    const rowsB = [...top8, "__other__"];
+    const cellOf = (k, mi, g) => DATA.filter(r => midx(r) === mi && r.gender === g &&
+      (k === "__other__" ? (causeKey(r) && !top8.includes(causeKey(r))) : causeKey(r) === k));
+    let maxN = 1;
+    rowsB.forEach(k => months.forEach((_, mi) => ["male", "female"].forEach(g => {
+      maxN = Math.max(maxN, cellOf(k, mi, g).length);
+    })));
+    const W = 980, labelW = 235, topPad = 30, rowH = 60;
+    const plotW = W - labelW - 12, colW = plotW / 12, H = topPad + rowsB.length * rowH + 8;
+    const med = arr => { const a = arr.filter(x => x != null).sort((x, y) => x - y);
+      return a.length ? a[Math.floor(a.length / 2)] : null; };
+    let s = "";
+    months.forEach((m, mi) => {
+      s += `<text x="${(labelW + mi * colW + colW / 2).toFixed(1)}" y="18" text-anchor="middle" font-size="12" fill="#5a4632">${m}</text>`;
+    });
+    rowsB.forEach((k, ri) => {
+      const y0 = topPad + ri * rowH;
+      const lbl = k === "__other__" ? t("other") : causeName(k);
+      s += `<line x1="${labelW}" y1="${y0 + rowH}" x2="${W - 6}" y2="${y0 + rowH}" stroke="#e0d0a8"/>`;
+      s += `<text x="0" y="${y0 + rowH / 2 + 4}" font-size="12" fill="#2e2118">${esc(lbl)}</text>`;
+      months.forEach((_, mi) => {
+        ["male", "female"].forEach(g => {
+          const sub = cellOf(k, mi, g);
+          if(!sub.length) return;
+          const rr = 4 + 19 * Math.sqrt(sub.length / maxN);
+          const cx = labelW + mi * colW + colW / 2 + (g === "male" ? -colW * 0.21 : colW * 0.21);
+          const cy = y0 + rowH / 2;
+          const mAge = med(sub.map(ageYears));
+          s += `<circle cx="${cx.toFixed(1)}" cy="${cy}" r="${rr.toFixed(1)}" fill="${g === "male" ? "#7c2222" : "#b8862e"}" fill-opacity="0.88"><title>${esc(lbl)}, ${months[mi]}: ${g === "male" ? t("men") : t("women")} ${sub.length}${mAge != null ? ", Ø " + Math.round(mAge) : ""}</title></circle>`;
+          if(rr >= 10.5 && mAge != null)
+            s += `<text x="${cx.toFixed(1)}" y="${cy + 3.5}" text-anchor="middle" font-size="10.5" fill="#fff" font-weight="bold">${Math.round(mAge)}</text>`;
+        });
+      });
+    });
+    $("#chartBubble").innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img">${s}</svg>`;
+    $("#legendBubble").innerHTML =
+      `<span><span class="sw" style="background:#7c2222"></span>${t("men")}</span><span><span class="sw" style="background:#b8862e"></span>${t("women")}</span>`;
+  }
 
   const pairs = new Map();
   DATA.forEach(r => {
